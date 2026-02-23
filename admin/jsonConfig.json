@@ -18,19 +18,13 @@
       "md": 6,
       "lg": 6
     },
-    "telegramUser1": {
+    "telegramUsers": {
       "type": "text",
-      "label": "Telegram Benutzer 1",
+      "label": "Telegram Benutzer (kommagetrennt)",
       "sm": 6,
       "md": 6,
-      "lg": 6
-    },
-    "telegramUser2": {
-      "type": "text",
-      "label": "Telegram Benutzer 2 (optional)",
-      "sm": 6,
-      "md": 6,
-      "lg": 6
+      "lg": 6,
+      "tooltip": "Z.B. Alex, Elena, User3"
     },
     "_header_datapoints": {
       "type": "header",

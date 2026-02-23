@@ -299,19 +299,14 @@ class PvNotifications extends utils.Adapter {
         const fullMessage = `${timestamp} - ${message}`;
 
         if (this.config.telegramInstance) {
-            // Benutzer zusammenstellen (User1 und/oder User2)
-            const users = [];
-            if (this.config.telegramUser1 && this.config.telegramUser1.trim()) {
-                users.push(this.config.telegramUser1.trim());
-            }
-            if (this.config.telegramUser2 && this.config.telegramUser2.trim()) {
-                users.push(this.config.telegramUser2.trim());
-            }
+            // Benutzer aus kommagetrennter Liste
+            const users = this.config.telegramUsers || '';
+            const usersList = users.split(',').map(u => u.trim()).filter(u => u.length > 0);
 
-            if (users.length > 0) {
+            if (usersList.length > 0) {
                 this.sendTo(this.config.telegramInstance, 'send', {
                     text: fullMessage,
-                    users: users.join(', ')
+                    users: usersList.join(', ')
                 }, (result) => {
                     if (result && result.error) {
                         this.log.error(`Telegram Fehler: ${result.error}`);
