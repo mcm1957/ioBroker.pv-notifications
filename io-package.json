@@ -1,9 +1,9 @@
 {
   "_id": "iobroker.pv-notifications",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "common": {
     "name": "pv-notifications",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "title": "PV Notifications",
     "titleLang": {
       "en": "PV Notifications",
@@ -19,6 +19,7 @@
     "license": "MIT",
     "platform": "Node.js",
     "main": "main.js",
+    "mode": "daemon",
     "type": "energy",
     "enabled": true,
     "compact": true,
