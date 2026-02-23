@@ -180,6 +180,15 @@
       "default": true,
       "tooltip": "Wenn deaktiviert, werden Benachrichtigungen auch nachts gesendet"
     },
+    "nightModeIgnoreEmpty": {
+      "type": "checkbox",
+      "label": "Nachtmodus für 0% ignorieren",
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
+      "default": true,
+      "tooltip": "Wenn aktiviert, wird bei 0% immer benachrichtigt (auch nachts)"
+    },
     "intermediateSteps": {
       "type": "text",
       "label": "Intermediate-Stufen (kommagetrennt)",
