@@ -363,6 +363,31 @@ class PvNotifications extends utils.Adapter {
             // Batterie-SOC Änderung verarbeiten
             if (id === this.config.batterySOC) {
                 this.onBatterySOCChange(state.val);
+                return;
+            }
+            
+            // Andere Datenpunkte aktualisieren (Production, Consumption, etc.)
+            if (state.ack) {  // Nur Status-Updates verarbeiten
+                if (id === this.config.totalProduction) {
+                    await this.setStateAsync('statistics.currentTotalProduction', state.val, true);
+                    this.log.debug(`statistics.currentTotalProduction aktualisiert: ${state.val}`);
+                }
+                if (id === this.config.feedIn) {
+                    await this.setStateAsync('statistics.currentFeedIn', state.val, true);
+                    this.log.debug(`statistics.currentFeedIn aktualisiert: ${state.val}`);
+                }
+                if (id === this.config.consumption) {
+                    await this.setStateAsync('statistics.currentConsumption', state.val, true);
+                    this.log.debug(`statistics.currentConsumption aktualisiert: ${state.val}`);
+                }
+                if (id === this.config.gridPower) {
+                    await this.setStateAsync('statistics.currentGridPower', state.val, true);
+                    this.log.debug(`statistics.currentGridPower aktualisiert: ${state.val}`);
+                }
+                if (id === this.config.powerProduction) {
+                    await this.setStateAsync('statistics.currentPower', state.val, true);
+                    this.log.debug(`statistics.currentPower aktualisiert: ${state.val}`);
+                }
             }
         }
     }
