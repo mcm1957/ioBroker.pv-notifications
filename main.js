@@ -259,16 +259,17 @@ class PvNotifications extends utils.Adapter {
         try {
             this.log.info('Aktualisiere aktuelle Werte...');
             
-            // SOC lesen und verarbeiten
+            // SOC lesen und verarbeiten (mit getForeignStateAsync für externe States)
             if (this.config.batterySOC) {
                 this.log.info(`Lese SOC von ${this.config.batterySOC}...`);
-                const socState = await this.getStateAsync(this.config.batterySOC);
+                const socState = await this.getForeignStateAsync(this.config.batterySOC);
                 this.log.info(`SOC State: ${JSON.stringify(socState)}`);
                 if (socState && socState.val !== null) {
                     this.log.info(`SOC gelesen: ${socState.val}%`);
                     this.onBatterySOCChange(socState.val);
                 } else {
                     this.log.warn('SOC State ist null oder undefined');
+                    this.log.warn(`Bitte prüfe: Existiert "${this.config.batterySOC}" in Objects?`);
                 }
             }
             
@@ -283,7 +284,7 @@ class PvNotifications extends utils.Adapter {
             
             for (const item of valueMap) {
                 if (item.config) {
-                    const state = await this.getStateAsync(item.config);
+                    const state = await this.getForeignStateAsync(item.config);
                     if (state && state.val !== null) {
                         await this.setStateAsync(item.state, state.val, true);
                         this.log.info(`${item.state} aktualisiert: ${state.val}`);
