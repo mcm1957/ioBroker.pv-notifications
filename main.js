@@ -266,7 +266,6 @@ class PvNotifications extends utils.Adapter {
             if (this.config.batterySOC) {
                 this.log.info(`Lese SOC von ${this.config.batterySOC}...`);
                 const socState = await this.getForeignStateAsync(this.config.batterySOC);
-                this.log.info(`SOC State: ${JSON.stringify(socState)}`);
                 if (socState && socState.val !== null) {
                     this.log.info(`SOC gelesen: ${socState.val}%`);
                     this.onBatterySOCChange(socState.val);
@@ -290,7 +289,6 @@ class PvNotifications extends utils.Adapter {
                     const state = await this.getForeignStateAsync(item.config);
                     if (state && state.val !== null) {
                         await this.setStateAsync(item.state, state.val, true);
-                        this.log.info(`${item.state} aktualisiert: ${state.val}`);
                     }
                 }
             }
@@ -342,8 +340,6 @@ class PvNotifications extends utils.Adapter {
      * Is called if a subscribed state changes
      */
     async onStateChange(id, state) {
-        this.log.debug(`[onStateChange] State geändert: ${id} = ${JSON.stringify(state)}`);
-
         if (state) {
             // Test-Button verarbeiten (alle States im eigenen Namespace)
             if (id.startsWith(this.namespace + '.testButton')) {
@@ -356,46 +352,32 @@ class PvNotifications extends utils.Adapter {
                     // State zurücksetzen
                     await this.setStateAsync('testButton', false, true);
                     this.status.testMessageRunning = false;  // Flag zurücksetzen
-                } else if (this.status.testMessageRunning) {
-                    this.log.debug('Test-Nachricht wird bereits gesendet, überspringe...');
                 }
                 return;
             }
 
             // Batterie-SOC Änderung verarbeiten
             if (id === this.config.batterySOC) {
-                this.log.debug(`[onStateChange] Batterie-SOC geändert: ${state.val}%`);
                 this.onBatterySOCChange(state.val);
                 return;
             }
-            
+
             // Andere Datenpunkte aktualisieren (Production, Consumption, etc.)
-            this.log.debug(`[onStateChange] Prüfe Datenpunkt: ${id}, ack=${state.ack}, val=${state.val}`);
             // if (state.ack) {  // Nur Status-Updates verarbeiten
                 if (id === this.config.totalProduction) {
-                    this.log.info(`[onStateChange] totalProduction: ${state.val} kWh`);
                     await this.setStateAsync('statistics.currentTotalProduction', state.val, true);
-                    this.log.debug(`statistics.currentTotalProduction aktualisiert: ${state.val}`);
                 }
                 if (id === this.config.feedIn) {
-                    this.log.info(`[onStateChange] feedIn: ${state.val} kWh`);
                     await this.setStateAsync('statistics.currentFeedIn', state.val, true);
-                    this.log.debug(`statistics.currentFeedIn aktualisiert: ${state.val}`);
                 }
                 if (id === this.config.consumption) {
-                    this.log.info(`[onStateChange] consumption: ${state.val} kWh`);
                     await this.setStateAsync('statistics.currentConsumption', state.val, true);
-                    this.log.debug(`statistics.currentConsumption aktualisiert: ${state.val}`);
                 }
                 if (id === this.config.gridPower) {
-                    this.log.info(`[onStateChange] gridPower: ${state.val} kWh`);
                     await this.setStateAsync('statistics.currentGridPower', state.val, true);
-                    this.log.debug(`statistics.currentGridPower aktualisiert: ${state.val}`);
                 }
                 if (id === this.config.powerProduction) {
-                    this.log.info(`[onStateChange] powerProduction: ${state.val} W`);
                     await this.setStateAsync('statistics.currentPower', state.val, true);
-                    this.log.debug(`statistics.currentPower aktualisiert: ${state.val}`);
                 }
             // }
         }
@@ -411,15 +393,10 @@ class PvNotifications extends utils.Adapter {
             return;
         }
 
-        this.log.info(`[onBatterySOCChange] SOC: ${soc}%`);
-
-        // Aktuelle States aktualisieren (mit await)
+        // Aktuelle States aktualisieren
         await this.setStateAsync('statistics.currentSOC', soc, true);
-        this.log.debug(`statistics.currentSOC aktualisiert: ${soc}`);
-        
         const currentKWh = this.round((soc / 100) * this.config.batteryCapacityWh / 1000, 1);
         await this.setStateAsync('statistics.currentEnergyKWh', currentKWh, true);
-        this.log.debug(`statistics.currentEnergyKWh aktualisiert: ${currentKWh} kWh`);
 
         // Statistik aktualisieren
         if (soc > this.stats.maxSOC) this.stats.maxSOC = soc;
