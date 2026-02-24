@@ -66,6 +66,9 @@ class PvNotifications extends utils.Adapter {
         
         // Ready-Handler registrieren (für js-controller 7+)
         this.on('ready', this.onReady);
+        
+        // StateChange-Handler registrieren (für js-controller 7+)
+        this.on('stateChange', this.onStateChange);
     }
 
     /**
