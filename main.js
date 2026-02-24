@@ -465,7 +465,7 @@ class PvNotifications extends utils.Adapter {
                 for (const step of intermediateSteps) {
                     if (soc === step && !this.status.intermediateNotified.includes(step)) {
                         if (this.canNotify('intermediate')) {
-                            const message = this.buildIntermediateMessage(soc, direction);
+                            const message = await this.buildIntermediateMessage(soc, direction);
                             this.sendTelegram(message);
                             this.status.intermediateNotified.push(step);
                             this.status.lastNotification.intermediate = Date.now();
@@ -654,8 +654,11 @@ class PvNotifications extends utils.Adapter {
     /**
      * Baue Intermediate-Nachricht (20%, 40%, 60%, 80%)
      */
-    buildIntermediateMessage(soc, direction) {
-        const power = this.getStateValue(this.config.powerProduction);
+    async buildIntermediateMessage(soc, direction) {
+        // Leistung aus State lesen (aktualisiert in Echtzeit)
+        const powerState = await this.getStateAsync('statistics.currentPower');
+        const power = powerState && powerState.val !== null ? powerState.val : 0;
+        
         const trend = direction === 'up' ? '⬆️' : '⬇️';
         const currentKWh = this.round((soc / 100) * this.config.batteryCapacityWh / 1000, 1);
 
