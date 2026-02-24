@@ -1,10 +1,10 @@
 {
   "name": "iobroker.pv-notifications",
-  "version": "1.0.4",
+  "version": "1.0.35",
   "description": "PV-Anlage Batterie-Status Telegram Benachrichtigungen",
   "author": {
-    "name": "Alex",
-    "email": "alex@example.com"
+    "name": "Alex1808 via LLM: Qwen",
+    "email": "sadam6752@gmail.com"
   },
   "homepage": "https://github.com/sadam6752-tech/ioBroker.pv-notifications",
   "license": "MIT",
