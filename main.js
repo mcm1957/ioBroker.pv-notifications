@@ -63,7 +63,6 @@ class PvNotifications extends utils.Adapter {
         this.onReady = this.onReady.bind(this);
         this.onStateChange = this.onStateChange.bind(this);
         this.onUnload = this.onUnload.bind(this);
-        this.onMessage = this.onMessage.bind(this);
     }
 
     /**
@@ -107,7 +106,10 @@ class PvNotifications extends utils.Adapter {
         await this.createState('statistics.lastWeekGridPower', 0, 'number', 'Netzbezug letzte Woche');
         await this.createState('statistics.lastWeekFullCycles', 0, 'number', 'Vollzyklen letzte Woche');
         await this.createState('statistics.lastWeekEmptyCycles', 0, 'number', 'Leerzyklen letzte Woche');
-        
+
+        // Test-Button State erstellen
+        await this.createState('testButton', false, 'boolean', 'Test-Benachrichtigung senden');
+
         await this.createState('info.connection', false, 'boolean', 'Adapter ist mit Telegram verbunden');
 
         // Event-Handler für Batterie-SOC registrieren
@@ -214,6 +216,17 @@ class PvNotifications extends utils.Adapter {
      */
     async onStateChange(id, state) {
         if (state) {
+            // Test-Button verarbeiten
+            if (id === `${this.namespace}.testButton`) {
+                if (state.val === true) {
+                    this.log.info('Test-Button wurde gedrückt');
+                    this.sendTestMessage();
+                    // State zurücksetzen
+                    await this.setStateAsync('testButton', false, true);
+                }
+                return;
+            }
+            
             // Batterie-SOC Änderung verarbeiten
             if (id === this.config.batterySOC) {
                 this.onBatterySOCChange(state.val);
@@ -991,58 +1004,6 @@ class PvNotifications extends utils.Adapter {
     }
 
     /**
-     * Is called when a message is received
-     * @param {any} obj
-     */
-    async onMessage(obj) {
-        this.log.debug(`onMessage erhalten: ${JSON.stringify(obj)}`);
-        
-        if (obj) {
-            switch (obj.command) {
-                case 'sendTestMessage':
-                    // Test-Benachrichtigung senden
-                    this.log.info('Test-Benachrichtigung wird gesendet');
-                    
-                    // Prüfe ob Telegram konfiguriert ist
-                    if (!this.config.telegramInstance) {
-                        this.log.warn('Test fehlgeschlagen: Keine Telegram-Instanz konfiguriert');
-                        if (obj.callback) {
-                            this.sendTo(obj.from, obj.command, { 
-                                success: false, 
-                                error: 'Keine Telegram-Instanz konfiguriert' 
-                            }, obj.callback);
-                        }
-                        return;
-                    }
-                    
-                    if (!this.config.telegramUsers) {
-                        this.log.warn('Test fehlgeschlagen: Keine Telegram-Benutzer konfiguriert');
-                        if (obj.callback) {
-                            this.sendTo(obj.from, obj.command, { 
-                                success: false, 
-                                error: 'Keine Telegram-Benutzer konfiguriert' 
-                            }, obj.callback);
-                        }
-                        return;
-                    }
-                    
-                    const testMessage = this.buildTestMessage();
-                    this.sendTelegram(testMessage, 'info');
-                    
-                    this.log.info('Test-Benachrichtigung wurde gesendet');
-                    
-                    if (obj.callback) {
-                        this.sendTo(obj.from, obj.command, { 
-                            success: true,
-                            message: 'Test-Benachrichtigung wurde gesendet'
-                        }, obj.callback);
-                    }
-                    break;
-            }
-        }
-    }
-
-    /**
      * Baue Test-Nachricht
      */
     buildTestMessage() {
@@ -1063,6 +1024,29 @@ class PvNotifications extends utils.Adapter {
 💡 ${this.translate('A healthy cycle per day is normal')}
 
 *${this.translate('Test Notification')} - pv-notifications v${this.version}*`;
+    }
+
+    /**
+     * Sende Test-Nachricht
+     */
+    async sendTestMessage() {
+        this.log.info('Test-Benachrichtigung wird gesendet');
+        
+        // Prüfe ob Telegram konfiguriert ist
+        if (!this.config.telegramInstance) {
+            this.log.warn('Test fehlgeschlagen: Keine Telegram-Instanz konfiguriert');
+            return;
+        }
+        
+        if (!this.config.telegramUsers) {
+            this.log.warn('Test fehlgeschlagen: Keine Telegram-Benutzer konfiguriert');
+            return;
+        }
+        
+        const testMessage = this.buildTestMessage();
+        this.sendTelegram(testMessage, 'info');
+        
+        this.log.info('Test-Benachrichtigung wurde gesendet');
     }
 
     /**
