@@ -128,6 +128,30 @@ class PvNotifications extends utils.Adapter {
             this.subscribeStates(this.config.batterySOC);
             this.log.info(`Subscription für ${this.config.batterySOC} erstellt`);
         }
+        
+        // Subscription für alle Datenpunkte erstellen
+        const dataPoints = [
+            this.config.powerProduction,
+            this.config.totalProduction,
+            this.config.feedIn,
+            this.config.consumption,
+            this.config.gridPower,
+            this.config.weeklyProduction,
+            this.config.weeklyConsumption,
+            this.config.weeklyFeedIn,
+            this.config.weeklyGridPower,
+            this.config.monthlyProduction,
+            this.config.monthlyConsumption,
+            this.config.monthlyFeedIn,
+            this.config.monthlyGridPower
+        ];
+        
+        for (const dp of dataPoints) {
+            if (dp) {
+                this.subscribeStates(dp);
+                this.log.debug(`Subscription für ${dp} erstellt`);
+            }
+        }
 
         // NACH allen subscriptions: Nochmal alle States subscriben
         this.subscribeStates('*');
