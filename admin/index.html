@@ -1,85 +1,298 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pv-notifications</title>
-    <script type="text/javascript" src="../../lib/js/jquery-3.x.min.js"></script>
-    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="../../js/translate.js"></script>
-    <script type="text/javascript" src="../../lib/js/selectID.js"></script>
-    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
-    <script>
-        // Поля для selectID
-        const selectFields = [
-            'batterySOC', 'powerProduction', 'totalProduction', 'feedIn',
-            'consumption', 'gridPower', 'weeklyProduction', 'weeklyConsumption',
-            'weeklyFeedIn', 'weeklyGridPower', 'monthlyProduction', 'monthlyConsumption',
-            'monthlyFeedIn', 'monthlyGridPower', 'weatherTodayText', 'weatherTodayTemp',
-            'weatherTomorrowText', 'weatherTomorrowTemp'
-        ];
-
-        function load(settings, onChange) {
-            if (!settings) return;
-
-            // Инициализация selectID для полей
-            selectFields.forEach(function (id) {
-                const $input = $('#' + id);
-                if ($input.length) {
-                    $input.selectID('init', {
-                        noSelect: true,
-                        value: settings[id],
-                        onChange: function () {
-                            onChange();
-                        }
-                    });
-                }
-            });
-
-            // Обработчики изменений
-            $('.value').on('change', function () {
-                onChange();
-            });
-
-            // Заполнение значений
-            $('.value').each(function () {
-                var $this = $(this);
-                var id = $this.attr('id');
-                if (settings[id] !== undefined) {
-                    if ($this.attr('type') === 'checkbox') {
-                        $this.prop('checked', settings[id]);
-                    } else {
-                        $this.val(settings[id]);
-                    }
-                }
-            });
-
-            // Обновление Materialize
-            setTimeout(function() {
-                M.updateTextFields();
-                $('select').each(function() {
-                    $(this).trigger('change');
-                });
-            }, 100);
+    <title>PV Notifications - Konfiguration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
         }
-
-        function save(callback) {
-            var settings = {};
-            $('.value').each(function () {
-                var $this = $(this);
-                var id = $this.attr('id');
-                if ($this.attr('type') === 'checkbox') {
-                    settings[id] = $this.prop('checked');
-                } else {
-                    settings[id] = $this.val();
-                }
-            });
-            callback(settings);
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-    </script>
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #666;
+            margin-top: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        .hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+        .button-row {
+            margin-top: 30px;
+            text-align: right;
+        }
+        button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-save {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
 </head>
 <body>
-    <div id="adapter-container"></div>
-    <script src="jsonConfig.js"></script>
+    <div class="container">
+        <h1>🔋 PV Notifications</h1>
+        <p>Telegram-Benachrichtigungen für PV-Batteriestatus</p>
+
+        <h2>Telegram Konfiguration</h2>
+        <div class="form-group">
+            <label for="telegramInstance">Telegram Instanz</label>
+            <input type="text" id="telegramInstance" data-name="native.telegramInstance" />
+            <div class="hint">Z.B. telegram.0</div>
+        </div>
+        <div class="form-group">
+            <label for="telegramUsers">Telegram Benutzer (kommagetrennt)</label>
+            <input type="text" id="telegramUsers" data-name="native.telegramUsers" />
+            <div class="hint">Z.B. User1, User2 oder -123456789 (Telegram-ID)</div>
+        </div>
+
+        <h2>Datenpunkte</h2>
+        <div class="form-group">
+            <label for="batterySOC">Batterie SOC (%)</label>
+            <input type="text" id="batterySOC" data-name="native.batterySOC" />
+        </div>
+        <div class="form-group">
+            <label for="powerProduction">Aktuelle PV-Leistung (W)</label>
+            <input type="text" id="powerProduction" data-name="native.powerProduction" />
+        </div>
+        <div class="form-group">
+            <label for="totalProduction">Gesamtproduktion heute (kWh)</label>
+            <input type="text" id="totalProduction" data-name="native.totalProduction" />
+        </div>
+        <div class="form-group">
+            <label for="feedIn">Einspeisung heute (kWh)</label>
+            <input type="text" id="feedIn" data-name="native.feedIn" />
+        </div>
+        <div class="form-group">
+            <label for="consumption">Hausverbrauch heute (kWh)</label>
+            <input type="text" id="consumption" data-name="native.consumption" />
+        </div>
+        <div class="form-group">
+            <label for="gridPower">Netzbezug heute (kWh)</label>
+            <input type="text" id="gridPower" data-name="native.gridPower" />
+        </div>
+        <div class="form-group">
+            <label for="monthlyProduction">Produktion diesen Monat (kWh)</label>
+            <input type="text" id="monthlyProduction" data-name="native.monthlyProduction" />
+            <div class="hint">sourceanalytix...Produktion.currentMonth</div>
+        </div>
+        <div class="form-group">
+            <label for="monthlyConsumption">Verbrauch diesen Monat (kWh)</label>
+            <input type="text" id="monthlyConsumption" data-name="native.monthlyConsumption" />
+            <div class="hint">sourceanalytix...Verbrauch.currentMonth</div>
+        </div>
+        <div class="form-group">
+            <label for="monthlyFeedIn">Einspeisung diesen Monat (kWh)</label>
+            <input type="text" id="monthlyFeedIn" data-name="native.monthlyFeedIn" />
+            <div class="hint">sourceanalytix...Einspeisung.currentMonth</div>
+        </div>
+        <div class="form-group">
+            <label for="monthlyGridPower">Netzbezug diesen Monat (kWh)</label>
+            <input type="text" id="monthlyGridPower" data-name="native.monthlyGridPower" />
+            <div class="hint">sourceanalytix...Netzbezug.currentMonth</div>
+        </div>
+
+        <h2>Batterie Konfiguration</h2>
+        <div class="form-group">
+            <label for="batteryCapacityWh">Batterie-Kapazität (Wh)</label>
+            <input type="number" id="batteryCapacityWh" data-name="native.batteryCapacityWh" />
+        </div>
+        <div class="form-group">
+            <label for="thresholdFull">Schwellwert VOLL (%)</label>
+            <input type="number" id="thresholdFull" data-name="native.thresholdFull" />
+        </div>
+        <div class="form-group">
+            <label for="thresholdEmpty">Schwellwert LEER (%)</label>
+            <input type="number" id="thresholdEmpty" data-name="native.thresholdEmpty" />
+        </div>
+        <div class="form-group">
+            <label for="thresholdResetFull">Reset VOLL unter (%)</label>
+            <input type="number" id="thresholdResetFull" data-name="native.thresholdResetFull" />
+        </div>
+        <div class="form-group">
+            <label for="thresholdResetEmpty">Reset LEER über (%)</label>
+            <input type="number" id="thresholdResetEmpty" data-name="native.thresholdResetEmpty" />
+        </div>
+
+        <h2>Intermediate-Stufen</h2>
+        <div class="form-group">
+            <input type="checkbox" id="nightModeEnabled" data-name="native.nightModeEnabled" />
+            <label for="nightModeEnabled" style="display: inline;">Nachtmodus aktivieren (00:00-08:00)</label>
+            <div class="hint">Wenn deaktiviert, werden Benachrichtigungen auch nachts gesendet</div>
+        </div>
+        <div class="form-group">
+            <input type="checkbox" id="nightModeIgnoreEmpty" data-name="native.nightModeIgnoreEmpty" />
+            <label for="nightModeIgnoreEmpty" style="display: inline;">Nachtmodus für 0% ignorieren</label>
+            <div class="hint">Wenn aktiviert, wird bei 0% immer benachrichtigt (auch nachts)</div>
+        </div>
+        <div class="form-group">
+            <label for="intermediateSteps">Intermediate-Stufen</label>
+            <input type="text" id="intermediateSteps" data-name="native.intermediateSteps" />
+            <div class="hint">Kommagetrennt, z.B. 20,40,60,80</div>
+        </div>
+        <div class="form-group">
+            <label for="minIntervalFull">Min. Intervall VOLL (Minuten)</label>
+            <input type="number" id="minIntervalFull" data-name="native.minIntervalFull" />
+        </div>
+        <div class="form-group">
+            <label for="minIntervalEmpty">Min. Intervall LEER (Minuten)</label>
+            <input type="number" id="minIntervalEmpty" data-name="native.minIntervalEmpty" />
+        </div>
+        <div class="form-group">
+            <label for="minIntervalIntermediate">Min. Intervall Intermediate (Minuten)</label>
+            <input type="number" id="minIntervalIntermediate" data-name="native.minIntervalIntermediate" />
+        </div>
+
+        <h2>Statistik & Zeitplanung</h2>
+        <div class="form-group">
+            <label for="statsDayTime">Tagesstatistik Uhrzeit</label>
+            <input type="text" id="statsDayTime" data-name="native.statsDayTime" />
+            <div class="hint">Format: HH:MM (z.B. 22:00)</div>
+        </div>
+        <div class="form-group">
+            <label for="statsWeekDay">Wochentag für Wochenstatistik</label>
+            <select id="statsWeekDay" data-name="native.statsWeekDay">
+                <option value="0">Sonntag</option>
+                <option value="1">Montag</option>
+                <option value="2">Dienstag</option>
+                <option value="3">Mittwoch</option>
+                <option value="4">Donnerstag</option>
+                <option value="5">Freitag</option>
+                <option value="6">Samstag</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="statsWeekTime">Uhrzeit für Wochenstatistik</label>
+            <input type="text" id="statsWeekTime" data-name="native.statsWeekTime" />
+            <div class="hint">Format: HH:MM (z.B. 10:00)</div>
+        </div>
+
+        <h2>Monatsstatistik (Optional)</h2>
+        <div class="form-group">
+            <input type="checkbox" id="monthlyStatsEnabled" data-name="native.monthlyStatsEnabled" />
+            <label for="monthlyStatsEnabled" style="display: inline;">Monatsstatistik aktivieren</label>
+        </div>
+        <div class="form-group">
+            <label for="monthlyStatsDay">Tag des Monats</label>
+            <input type="number" id="monthlyStatsDay" data-name="native.monthlyStatsDay" min="1" max="31" />
+            <div class="hint">1-31 (z.B. 1 = Erster des Monats)</div>
+        </div>
+        <div class="form-group">
+            <label for="monthlyStatsTime">Uhrzeit für Monatsstatistik</label>
+            <input type="text" id="monthlyStatsTime" data-name="native.monthlyStatsTime" />
+            <div class="hint">Format: HH:MM (z.B. 09:00)</div>
+        </div>
+
+        <h2>Wetter (Optional)</h2>
+        <div class="form-group">
+            <label for="weatherToday">Wetter heute</label>
+            <input type="text" id="weatherToday" data-name="native.weatherToday" />
+        </div>
+        <div class="form-group">
+            <label for="weatherTomorrow">Wetter morgen</label>
+            <input type="text" id="weatherTomorrow" data-name="native.weatherTomorrow" />
+        </div>
+
+        <h2>Schwellwerte für Empfehlungen</h2>
+        <div class="form-group">
+            <label for="highProduction">Hohe Produktion ab (W)</label>
+            <input type="number" id="highProduction" data-name="native.highProduction" />
+        </div>
+        <div class="form-group">
+            <label for="highConsumption">Hoher Verbrauch ab (W)</label>
+            <input type="number" id="highConsumption" data-name="native.highConsumption" />
+        </div>
+
+        <div class="button-row">
+            <button class="btn-cancel" onclick="window.close()">Abbrechen</button>
+            <button class="btn-save" onclick="save()">Speichern</button>
+        </div>
+    </div>
+
+    <script>
+        // Wird von ioBroker admin bereitgestellt
+        function save(callback) {
+            // Werte aus den Inputs sammeln
+            const data = {};
+            document.querySelectorAll('[data-name]').forEach(el => {
+                const name = el.getAttribute('data-name');
+                const value = el.type === 'number' ? parseFloat(el.value) : el.value;
+                data[name] = value;
+            });
+
+            // An parent-Fenster senden (ioBroker admin)
+            window.parent.postMessage({
+                action: 'save',
+                data: data
+            }, '*');
+
+            if (callback) callback();
+        }
+
+        // Werte laden (wird von ioBroker aufgerufen)
+        function load(data) {
+            document.querySelectorAll('[data-name]').forEach(el => {
+                const name = el.getAttribute('data-name');
+                if (data[name] !== undefined) {
+                    el.value = data[name];
+                }
+            });
+        }
+
+        // Auf Nachrichten vom Parent hören
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.action === 'load') {
+                load(event.data.data);
+            }
+        });
+    </script>
 </body>
 </html>
