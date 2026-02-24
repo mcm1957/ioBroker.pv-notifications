@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pv-notifications</title>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="../../lib/css/factory-settings.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <div class="m">
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">
+                            <img src="img/pv-notifications.png" class="adapter-image" alt="pv-notifications">
+                            <span class="translate">pv-notifications</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Telegram Konfiguration -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-header blue lighten-1">
+                        <span class="card-title translate">header_telegram</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <select class="value" id="telegramInstance"></select>
+                                <label class="translate" for="telegramInstance">label_telegramInstance</label>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value" type="text" id="telegramUsers" />
+                                <label class="translate" for="telegramUsers">label_telegramUsers</label>
+                                <span class="translate tooltip" for="telegramUsers" data-tooltip="tooltip_telegramUsers"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Datenpunkte Konfiguration -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-header blue lighten-1">
+                        <span class="card-title translate">header_datapoints</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="batterySOC" />
+                                <label class="translate" for="batterySOC">label_batterySOC</label>
+                                <span class="translate tooltip" for="batterySOC" data-tooltip="tooltip_batterySOC"></span>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="powerProduction" />
+                                <label class="translate" for="powerProduction">label_powerProduction</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="totalProduction" />
+                                <label class="translate" for="totalProduction">label_totalProduction</label>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="feedIn" />
+                                <label class="translate" for="feedIn">label_feedIn</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="consumption" />
+                                <label class="translate" for="consumption">label_consumption</label>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="gridPower" />
+                                <label class="translate" for="gridPower">label_gridPower</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="weeklyProduction" />
+                                <label class="translate" for="weeklyProduction">label_weeklyProduction</label>
+                                <span class="translate tooltip" for="weeklyProduction" data-tooltip="tooltip_weeklyProduction"></span>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="weeklyConsumption" />
+                                <label class="translate" for="weeklyConsumption">label_weeklyConsumption</label>
+                                <span class="translate tooltip" for="weeklyConsumption" data-tooltip="tooltip_weeklyConsumption"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="weeklyFeedIn" />
+                                <label class="translate" for="weeklyFeedIn">label_weeklyFeedIn</label>
+                                <span class="translate tooltip" for="weeklyFeedIn" data-tooltip="tooltip_weeklyFeedIn"></span>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="weeklyGridPower" />
+                                <label class="translate" for="weeklyGridPower">label_weeklyGridPower</label>
+                                <span class="translate tooltip" for="weeklyGridPower" data-tooltip="tooltip_weeklyGridPower"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="monthlyProduction" />
+                                <label class="translate" for="monthlyProduction">label_monthlyProduction</label>
+                                <span class="translate tooltip" for="monthlyProduction" data-tooltip="tooltip_monthlyProduction"></span>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="monthlyConsumption" />
+                                <label class="translate" for="monthlyConsumption">label_monthlyConsumption</label>
+                                <span class="translate tooltip" for="monthlyConsumption" data-tooltip="tooltip_monthlyConsumption"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="monthlyFeedIn" />
+                                <label class="translate" for="monthlyFeedIn">label_monthlyFeedIn</label>
+                                <span class="translate tooltip" for="monthlyFeedIn" data-tooltip="tooltip_monthlyFeedIn"></span>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="monthlyGridPower" />
+                                <label class="translate" for="monthlyGridPower">label_monthlyGridPower</label>
+                                <span class="translate tooltip" for="monthlyGridPower" data-tooltip="tooltip_monthlyGridPower"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Batterie Konfiguration -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-header blue lighten-1">
+                        <span class="card-title translate">header_battery</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value" type="number" id="batteryCapacityWh" min="1000" max="100000" step="100" />
+                                <label class="translate" for="batteryCapacityWh">label_batteryCapacityWh</label>
+                            </div>
+                            <div class="input-field col s12 m3">
+                                <input class="value" type="number" id="thresholdFull" min="0" max="100" />
+                                <label class="translate" for="thresholdFull">label_thresholdFull</label>
+                            </div>
+                            <div class="input-field col s12 m3">
+                                <input class="value" type="number" id="thresholdEmpty" min="0" max="100" />
+                                <label class="translate" for="thresholdEmpty">label_thresholdEmpty</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m3">
+                                <input class="value" type="number" id="thresholdResetFull" min="0" max="100" />
+                                <label class="translate" for="thresholdResetFull">label_thresholdResetFull</label>
+                            </div>
+                            <div class="input-field col s12 m3">
+                                <input class="value" type="number" id="thresholdResetEmpty" min="0" max="100" />
+                                <label class="translate" for="thresholdResetEmpty">label_thresholdResetEmpty</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nachtmodus & Intermediate-Stufen -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-header blue lighten-1">
+                        <span class="card-title translate">header_intermediate</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input class="value" type="checkbox" id="nightModeEnabled" />
+                                <label class="translate" for="nightModeEnabled">label_nightModeEnabled</label>
+                                <span class="translate tooltip" for="nightModeEnabled" data-tooltip="tooltip_nightModeEnabled"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input class="value" type="checkbox" id="nightModeIgnoreEmpty" />
+                                <label class="translate" for="nightModeIgnoreEmpty">label_nightModeIgnoreEmpty</label>
+                                <span class="translate tooltip" for="nightModeIgnoreEmpty" data-tooltip="tooltip_nightModeIgnoreEmpty"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value" type="text" id="intermediateSteps" />
+                                <label class="translate" for="intermediateSteps">label_intermediateSteps</label>
+                                <span class="translate tooltip" for="intermediateSteps" data-tooltip="tooltip_intermediateSteps"></span>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <input class="value" type="number" id="minIntervalFull" min="1" max="120" />
+                                <label class="translate" for="minIntervalFull">label_minIntervalFull</label>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <input class="value" type="number" id="minIntervalEmpty" min="1" max="120" />
+                                <label class="translate" for="minIntervalEmpty">label_minIntervalEmpty</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m4">
+                                <input class="value" type="number" id="minIntervalIntermediate" min="1" max="120" />
+                                <label class="translate" for="minIntervalIntermediate">label_minIntervalIntermediate</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistik & Zeitplanung -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-header blue lighten-1">
+                        <span class="card-title translate">header_statistics</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="input-field col s12 m4">
+                                <input class="value" type="text" id="statsDayTime" />
+                                <label class="translate" for="statsDayTime">label_statsDayTime</label>
+                                <span class="translate tooltip" for="statsDayTime" data-tooltip="tooltip_statsDayTime"></span>
+                            </div>
+                            <div class="input-field col s12 m4">
+                                <input class="value" type="number" id="statsWeekDay" min="0" max="6" />
+                                <label class="translate" for="statsWeekDay">label_statsWeekDay</label>
+                                <span class="translate tooltip" for="statsWeekDay" data-tooltip="tooltip_statsWeekDay"></span>
+                            </div>
+                            <div class="input-field col s12 m4">
+                                <input class="value" type="text" id="statsWeekTime" />
+                                <label class="translate" for="statsWeekTime">label_statsWeekTime</label>
+                                <span class="translate tooltip" for="statsWeekTime" data-tooltip="tooltip_statsWeekTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monatsstatistik -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-header blue lighten-1">
+                        <span class="card-title translate">header_monthly</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value" type="checkbox" id="monthlyStatsEnabled" />
+                                <label class="translate" for="monthlyStatsEnabled">label_monthlyStatsEnabled</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m3">
+                                <input class="value" type="number" id="monthlyStatsDay" min="1" max="31" />
+                                <label class="translate" for="monthlyStatsDay">label_monthlyStatsDay</label>
+                                <span class="translate tooltip" for="monthlyStatsDay" data-tooltip="tooltip_monthlyStatsDay"></span>
+                            </div>
+                            <div class="input-field col s12 m3">
+                                <input class="value" type="text" id="monthlyStatsTime" />
+                                <label class="translate" for="monthlyStatsTime">label_monthlyStatsTime</label>
+                                <span class="translate tooltip" for="monthlyStatsTime" data-tooltip="tooltip_monthlyStatsTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wetter -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-header blue lighten-1">
+                        <span class="card-title translate">header_weather</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="weatherTodayText" />
+                                <label class="translate" for="weatherTodayText">label_weatherTodayText</label>
+                                <span class="translate tooltip" for="weatherTodayText" data-tooltip="tooltip_weatherTodayText"></span>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="weatherTodayTemp" />
+                                <label class="translate" for="weatherTodayTemp">label_weatherTodayTemp</label>
+                                <span class="translate tooltip" for="weatherTodayTemp" data-tooltip="tooltip_weatherTodayTemp"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="weatherTomorrowText" />
+                                <label class="translate" for="weatherTomorrowText">label_weatherTomorrowText</label>
+                                <span class="translate tooltip" for="weatherTomorrowText" data-tooltip="tooltip_weatherTomorrowText"></span>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value selectID" type="text" id="weatherTomorrowTemp" />
+                                <label class="translate" for="weatherTomorrowTemp">label_weatherTomorrowTemp</label>
+                                <span class="translate tooltip" for="weatherTomorrowTemp" data-tooltip="tooltip_weatherTomorrowTemp"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schwellwerte -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-header blue lighten-1">
+                        <span class="card-title translate">header_thresholds</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <input class="value" type="number" id="highProduction" />
+                                <label class="translate" for="highProduction">label_highProduction</label>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input class="value" type="number" id="highConsumption" />
+                                <label class="translate" for="highConsumption">label_highConsumption</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="row">
+            <div class="col s12">
+                <button class="btn btn-save" id="save">
+                    <span class="translate">Save</span>
+                </button>
+                <button class="btn btn-cancel" id="cancel">
+                    <span class="translate">Cancel</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../lib/js/jquery-3.x.min.js"></script>
+    <script src="../../lib/js/materialize.js"></script>
+    <script src="../../socket.io/socket.io.js"></script>
+    <script src="../../js/translate.js"></script>
+    <script src="../../lib/js/selectID.js"></script>
+    <script src="../../js/adapter-settings.js"></script>
+
+    <script>
+        let systemConfig;
+
+        function load(settings, onChange) {
+            if (!settings) return;
+
+            // Load system config for language
+            socket.emit('getObject', 'system.config', function (err, obj) {
+                if (obj && obj.common) {
+                    systemConfig = obj.common;
+                }
+            });
+
+            // Initialize all selectID fields
+            const selectFields = [
+                'batterySOC', 'powerProduction', 'totalProduction', 'feedIn',
+                'consumption', 'gridPower', 'weeklyProduction', 'weeklyConsumption',
+                'weeklyFeedIn', 'weeklyGridPower', 'monthlyProduction', 'monthlyConsumption',
+                'monthlyFeedIn', 'monthlyGridPower', 'weatherTodayText', 'weatherTodayTemp',
+                'weatherTomorrowText', 'weatherTomorrowTemp'
+            ];
+
+            selectFields.forEach(function (id) {
+                $('#' + id).selectID('init', {
+                    noSelect: true,
+                    value: settings[id],
+                    onChange: function () {
+                        onChange();
+                    }
+                });
+            });
+
+            // Initialize instance selector
+            $('#telegramInstance').select('init', {
+                data: settings.telegramInstance,
+                onChange: onChange
+            });
+
+            // Initialize all input fields
+            $('.value').on('change', function () {
+                onChange();
+            });
+
+            // Fill values
+            $('.value').each(function () {
+                var $this = $(this);
+                var id = $this.attr('id');
+                if (settings[id] !== undefined) {
+                    if ($this.attr('type') === 'checkbox') {
+                        $this.prop('checked', settings[id]);
+                    } else {
+                        $this.val(settings[id]);
+                    }
+                }
+            });
+
+            // Materialize labels
+            M.updateTextFields();
+            M.updateSelect();
+        }
+
+        function save(callback) {
+            var settings = {};
+            $('.value').each(function () {
+                var $this = $(this);
+                var id = $this.attr('id');
+                if ($this.attr('type') === 'checkbox') {
+                    settings[id] = $this.prop('checked');
+                } else {
+                    settings[id] = $this.val();
+                }
+            });
+            callback(settings);
+        }
+
+        // Initialize after DOM ready
+        $(document).ready(function () {
+            loadSettings();
+        });
+    </script>
+</body>
+</html>

@@ -1,9 +1,9 @@
 {
   "_id": "iobroker.pv-notifications",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "common": {
     "name": "pv-notifications",
-    "version": "1.0.23",
+    "version": "1.0.24",
     "title": "PV Notifications",
     "titleLang": {
       "en": "PV Notifications",
@@ -27,7 +27,7 @@
     "connectionType": "local",
     "dataSource": "push",
     "adminUI": {
-      "config": "json"
+      "config": "html"
     },
     "i18n": true,
     "extIcon": "https://raw.githubusercontent.com/sadam6752-tech/ioBroker.pv-notifications/main/admin/pv-notifications.png",
