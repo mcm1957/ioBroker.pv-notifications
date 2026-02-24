@@ -1,9 +1,9 @@
 {
   "_id": "iobroker.pv-notifications",
-  "version": "1.0.45",
+  "version": "1.0.46",
   "common": {
     "name": "pv-notifications",
-    "version": "1.0.45",
+    "version": "1.0.46",
     "title": "PV Notifications",
     "titleLang": {
       "en": "PV Notifications",
