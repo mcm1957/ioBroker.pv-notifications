@@ -34,7 +34,7 @@
       "md": 12,
       "lg": 12,
       "command": "sendTestMessage",
-      "color": "#FF9800",
+      "color": "primary",
       "icon": "pv-notifications.png"
     },
     "_header_datapoints": {
