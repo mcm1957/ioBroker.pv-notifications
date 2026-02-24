@@ -37,7 +37,7 @@
       "command": "sendTestMessage",
       "ack": true,
       "color": "#FF9800",
-      "icon": "test"
+      "icon": "pv-notifications.png"
     },
     "_header_datapoints": {
       "type": "header",
