@@ -41,7 +41,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_batterySOC",
-      "objSelect": true
+      "button": "objSelect"
     },
     "powerProduction": {
       "type": "text",
@@ -49,7 +49,7 @@
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "objSelect": true
+      "button": "objSelect"
     },
     "totalProduction": {
       "type": "text",
@@ -57,7 +57,7 @@
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "objSelect": true
+      "button": "objSelect"
     },
     "feedIn": {
       "type": "text",
@@ -65,7 +65,7 @@
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "objSelect": true
+      "button": "objSelect"
     },
     "consumption": {
       "type": "text",
@@ -73,7 +73,7 @@
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "objSelect": true
+      "button": "objSelect"
     },
     "gridPower": {
       "type": "text",
@@ -81,7 +81,7 @@
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "objSelect": true
+      "button": "objSelect"
     },
     "weeklyProduction": {
       "type": "text",
@@ -90,7 +90,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_weeklyProduction",
-      "objSelect": true
+      "button": "objSelect"
     },
     "weeklyConsumption": {
       "type": "text",
@@ -99,7 +99,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_weeklyConsumption",
-      "objSelect": true
+      "button": "objSelect"
     },
     "weeklyFeedIn": {
       "type": "text",
@@ -108,7 +108,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_weeklyFeedIn",
-      "objSelect": true
+      "button": "objSelect"
     },
     "weeklyGridPower": {
       "type": "text",
@@ -117,7 +117,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_weeklyGridPower",
-      "objSelect": true
+      "button": "objSelect"
     },
     "monthlyProduction": {
       "type": "text",
@@ -126,7 +126,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_monthlyProduction",
-      "objSelect": true
+      "button": "objSelect"
     },
     "monthlyConsumption": {
       "type": "text",
@@ -135,7 +135,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_monthlyConsumption",
-      "objSelect": true
+      "button": "objSelect"
     },
     "monthlyFeedIn": {
       "type": "text",
@@ -144,7 +144,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_monthlyFeedIn",
-      "objSelect": true
+      "button": "objSelect"
     },
     "monthlyGridPower": {
       "type": "text",
@@ -153,7 +153,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_monthlyGridPower",
-      "objSelect": true
+      "button": "objSelect"
     },
     "_header_battery": {
       "type": "header",
@@ -357,7 +357,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_weatherTodayText",
-      "objSelect": true
+      "button": "objSelect"
     },
     "weatherTodayTemp": {
       "type": "text",
@@ -366,7 +366,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_weatherTodayTemp",
-      "objSelect": true
+      "button": "objSelect"
     },
     "weatherTomorrowText": {
       "type": "text",
@@ -375,7 +375,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_weatherTomorrowText",
-      "objSelect": true
+      "button": "objSelect"
     },
     "weatherTomorrowTemp": {
       "type": "text",
@@ -384,7 +384,7 @@
       "md": 6,
       "lg": 6,
       "tooltip": "tooltip_weatherTomorrowTemp",
-      "objSelect": true
+      "button": "objSelect"
     },
     "_header_thresholds": {
       "type": "header",
