@@ -83,9 +83,6 @@ class PvNotifications extends utils.Adapter {
 
         this.log.info('PV Notifications Adapter gestartet');
 
-        // Message-Handler registrieren
-        this.on('message', this.onMessage.bind(this));
-
         // Konfiguration loggen
         this.log.info(`Konfiguration: Voll=${this.config.thresholdFull}%, Leer=${this.config.thresholdEmpty}%, Intermediate=[${this.config.intermediateSteps}]`);
 
