@@ -554,8 +554,7 @@ class PvNotifications extends utils.Adapter {
 🏠 Eigenverbrauch: ${selfConsumption} kWh (${selfConsumptionRate}%)
 🔌 Einspeisung: ${feedIn} kWh
 ⚡ Netzbezug: ${gridPower} kWh
-━━━━━━━━━━━━━━━━━━━━━━
-💡 Danke für einen nachhaltigen Monat!`;
+━━━━━━━━━━━━━━━━━━━━━━`;
     }
 
     /**
