@@ -114,7 +114,7 @@ class PvNotifications extends utils.Adapter {
         // Test-Button State erstellen
         await this.createState('testButton', false, 'boolean', 'Test-Benachrichtigung senden');
         
-        // Explizit subscriben
+        // Explizit subscriben (für js-controller 7+)
         this.subscribeStates('testButton');
         this.log.info('Subscription für testButton erstellt');
 
@@ -226,8 +226,8 @@ class PvNotifications extends utils.Adapter {
         this.log.debug(`State geändert: ${id} = ${JSON.stringify(state)}`);
         
         if (state) {
-            // Test-Button verarbeiten
-            if (id === `${this.namespace}.testButton`) {
+            // Test-Button verarbeiten (alle States im eigenen Namespace)
+            if (id.startsWith(this.namespace + '.testButton')) {
                 this.log.info(`Test-Button State empfangen: ${id}, val=${state.val}`);
                 if (state.val === true) {
                     this.log.info('Test-Button wurde gedrückt');
