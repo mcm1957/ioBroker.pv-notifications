@@ -154,8 +154,9 @@ class PvNotifications extends utils.Adapter {
         
         for (const dp of dataPoints) {
             if (dp) {
-                this.subscribeStates(dp);
-                this.log.debug(`Subscription für ${dp} erstellt`);
+                // subscribeForeignStates für externe States verwenden
+                this.subscribeForeignStates(dp);
+                this.log.debug(`Subscription für ${dp} erstellt (foreign)`);
             }
         }
 
