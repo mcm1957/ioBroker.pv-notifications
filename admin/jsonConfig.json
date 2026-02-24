@@ -35,125 +35,111 @@
       "lg": 12
     },
     "batterySOC": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_batterySOC",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_batterySOC",
-      "objSelect": true
+      "tooltip": "tooltip_batterySOC"
     },
     "powerProduction": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_powerProduction",
       "sm": 6,
       "md": 6,
-      "lg": 6,
-      "objSelect": true
+      "lg": 6
     },
     "totalProduction": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_totalProduction",
       "sm": 6,
       "md": 6,
-      "lg": 6,
-      "objSelect": true
+      "lg": 6
     },
     "feedIn": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_feedIn",
       "sm": 6,
       "md": 6,
-      "lg": 6,
-      "objSelect": true
+      "lg": 6
     },
     "consumption": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_consumption",
       "sm": 6,
       "md": 6,
-      "lg": 6,
-      "objSelect": true
+      "lg": 6
     },
     "gridPower": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_gridPower",
       "sm": 6,
       "md": 6,
-      "lg": 6,
-      "objSelect": true
+      "lg": 6
     },
     "weeklyProduction": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_weeklyProduction",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_weeklyProduction",
-      "objSelect": true
+      "tooltip": "tooltip_weeklyProduction"
     },
     "weeklyConsumption": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_weeklyConsumption",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_weeklyConsumption",
-      "objSelect": true
+      "tooltip": "tooltip_weeklyConsumption"
     },
     "weeklyFeedIn": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_weeklyFeedIn",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_weeklyFeedIn",
-      "objSelect": true
+      "tooltip": "tooltip_weeklyFeedIn"
     },
     "weeklyGridPower": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_weeklyGridPower",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_weeklyGridPower",
-      "objSelect": true
+      "tooltip": "tooltip_weeklyGridPower"
     },
     "monthlyProduction": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_monthlyProduction",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_monthlyProduction",
-      "objSelect": true
+      "tooltip": "tooltip_monthlyProduction"
     },
     "monthlyConsumption": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_monthlyConsumption",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_monthlyConsumption",
-      "objSelect": true
+      "tooltip": "tooltip_monthlyConsumption"
     },
     "monthlyFeedIn": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_monthlyFeedIn",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_monthlyFeedIn",
-      "objSelect": true
+      "tooltip": "tooltip_monthlyFeedIn"
     },
     "monthlyGridPower": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_monthlyGridPower",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_monthlyGridPower",
-      "objSelect": true
+      "tooltip": "tooltip_monthlyGridPower"
     },
     "_header_battery": {
       "type": "header",
@@ -351,40 +337,36 @@
       "lg": 12
     },
     "weatherTodayText": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_weatherTodayText",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_weatherTodayText",
-      "objSelect": true
+      "tooltip": "tooltip_weatherTodayText"
     },
     "weatherTodayTemp": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_weatherTodayTemp",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_weatherTodayTemp",
-      "objSelect": true
+      "tooltip": "tooltip_weatherTodayTemp"
     },
     "weatherTomorrowText": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_weatherTomorrowText",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_weatherTomorrowText",
-      "objSelect": true
+      "tooltip": "tooltip_weatherTomorrowText"
     },
     "weatherTomorrowTemp": {
-      "type": "text",
+      "type": "objectId",
       "label": "label_weatherTomorrowTemp",
       "sm": 6,
       "md": 6,
       "lg": 6,
-      "tooltip": "tooltip_weatherTomorrowTemp",
-      "objSelect": true
+      "tooltip": "tooltip_weatherTomorrowTemp"
     },
     "_header_thresholds": {
       "type": "header",
