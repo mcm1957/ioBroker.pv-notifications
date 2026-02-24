@@ -369,8 +369,8 @@ class PvNotifications extends utils.Adapter {
             }
             
             // Andere Datenpunkte aktualisieren (Production, Consumption, etc.)
-            this.log.debug(`[onStateChange] Prüfe Datenpunkt: ${id}, ack=${state.ack}`);
-            if (state.ack) {  // Nur Status-Updates verarbeiten
+            this.log.debug(`[onStateChange] Prüfe Datenpunkt: ${id}, ack=${state.ack}, val=${state.val}`);
+            // if (state.ack) {  // Nur Status-Updates verarbeiten
                 if (id === this.config.totalProduction) {
                     this.log.info(`[onStateChange] totalProduction: ${state.val} kWh`);
                     await this.setStateAsync('statistics.currentTotalProduction', state.val, true);
@@ -396,7 +396,7 @@ class PvNotifications extends utils.Adapter {
                     await this.setStateAsync('statistics.currentPower', state.val, true);
                     this.log.debug(`statistics.currentPower aktualisiert: ${state.val}`);
                 }
-            }
+            // }
         }
     }
 
