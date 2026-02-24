@@ -23,7 +23,7 @@ Für volle Funktionalität werden folgende Adapter benötigt:
 |---------|--------------|--------------|
 | **telegram** | Sendet Benachrichtigungen | ✅ Ja |
 | **sourceanalytix** | Statistik-Daten (Verbrauch, Einspeisung, Netzbezug) | ✅ Ja |
-| **openweathermap** | Wetter-Prognose für Empfehlungen | ❌ Optional |
+| **daswetter** oder **openweathermap** | Wetter-Prognose für Empfehlungen | ❌ Optional |
 
 ## Installation
 
@@ -66,6 +66,21 @@ npm install iobroker.pv-notifications
 | Verbrauch diesen Monat | Monatsverbrauch (kWh) | `sourceanalytix.0...Verbrauch.currentMonth` |
 | Einspeisung diesen Monat | Monatseinspeisung (kWh) | `sourceanalytix.0...Einspeisung.currentMonth` |
 | Netzbezug diesen Monat | Monats-Netzbezug (kWh) | `sourceanalytix.0...Netzbezug.currentMonth` |
+| Produktion diese Woche | Wochenproduktion (kWh) | `sourceanalytix.0...Produktion.currentWeek` |
+| Verbrauch diese Woche | Wochenverbrauch (kWh) | `sourceanalytix.0...Verbrauch.currentWeek` |
+| Einspeisung diese Woche | Wocheneinspeisung (kWh) | `sourceanalytix.0...Einspeisung.currentWeek` |
+| Netzbezug diese Woche | Wochen-Netzbezug (kWh) | `sourceanalytix.0...Netzbezug.currentWeek` |
+
+### Wetter (Optional)
+
+| Einstellung | Beschreibung | Beispiel (daswetter) | Beispiel (openweathermap) |
+|-------------|--------------|----------------------|---------------------------|
+| Wetter heute | Wetterbeschreibung heute | `daswetter.0.Day0.forecast.currentSymbol` | `openweathermap.0.forecast.0.text` |
+| Temperatur heute (°C) | Temperatur heute | `daswetter.0.Day0.forecast.maxTemp` | `openweathermap.0.forecast.0.temp` |
+| Wetter morgen | Wetterbeschreibung morgen | `daswetter.0.Day1.forecast.currentSymbol` | `openweathermap.0.forecast.1.text` |
+| Temperatur morgen (°C) | Temperatur morgen | `daswetter.0.Day1.forecast.maxTemp` | `openweathermap.0.forecast.1.temp` |
+
+**Hinweis:** Die Felder `Wetter heute` und `Wetter morgen` können alternativ verwendet werden, wenn der Wetter-Adapter andere Formate liefert. Für die beste Kompatibilität empfehlen wir die Verwendung von `Wettertext`-Feldern.
 
 ### Batterie
 
@@ -137,12 +152,14 @@ npm install iobroker.pv-notifications
 ```
 09:00 - 📊 *Monatsstatistik PV-Anlage*
 ━━━━━━━━━━━━━━━━━━━━━━
+🔋 Vollzyklen dieser Monat: 28
+📉 Leerzyklen dieser Monat: 15
+━━━━━━━━━━━━━━━━━━━━━━
 ☀️ Produktion: 345.2 kWh
 🏠 Eigenverbrauch: 287.5 kWh (83.3%)
 🔌 Einspeisung: 57.7 kWh
 ⚡ Netzbezug: 23.4 kWh
 ━━━━━━━━━━━━━━━━━━━━━━
-💡 Danke für einen nachhaltigen Monat!
 ```
 
 ## States
@@ -159,6 +176,62 @@ Der Adapter erstellt folgende States unter `pv-notifications.0`:
 | `statistics.emptyCyclesWeek` | number | Leerzyklen diese Woche |
 | `statistics.currentSOC` | number | Aktueller SOC |
 | `statistics.currentEnergyKWh` | number | Aktuelle Energie in kWh |
+
+## Konfigurations-Beispiel (openweathermap)
+
+### Wetter-Datenpunkte konfigurieren
+
+Wenn du den **openweathermap**-Adapter verwendest, konfiguriere folgende Felder:
+
+```
+Wetter heute:           openweathermap.0.forecast.0.text
+Temperatur heute:       openweathermap.0.forecast.0.temp
+Wetter morgen:          openweathermap.0.forecast.1.text
+Temperatur morgen:      openweathermap.0.forecast.1.temp
+```
+
+### Alternative: Daswetter-Adapter
+
+```
+Wetter heute:           daswetter.0.Day0.forecast.currentSymbol
+Temperatur heute:       daswetter.0.Day0.forecast.maxTemp
+Wetter morgen:          daswetter.0.Day1.forecast.currentSymbol
+Temperatur morgen:      daswetter.0.Day1.forecast.maxTemp
+```
+
+### Beispiel-Ausgabe mit Wetter
+
+**Tagesstatistik:**
+```
+📊 *Tagesstatistik PV-Anlage*
+━━━━━━━━━━━━━━━━━━━━━━
+🔋 Aktueller Ladestand: 85%
+⚡ Aktuelle Energie: 17.9 kWh (21.0 kWh Gesamt)
+━━━━━━━━━━━━━━━━━━━━━━
+☀️ Produktion: 45.2 kWh
+🏠 Eigenverbrauch: 32.1 kWh (71%)
+🔌 Einspeisung: 13 kWh
+⚡ Netzbezug: 2 kWh
+━━━━━━━━━━━━━━━━━━━━━━
+🌤️ *Wetter morgen:* ☀️ sonnig 22.5°C
+☀️ Gute PV-Produktion erwartet!
+```
+
+**Wochenstatistik:**
+```
+📊 *Wochenstatistik PV-Anlage*
+━━━━━━━━━━━━━━━━━━━━━━
+🔋 Vollzyklen diese Woche: 5
+📉 Leerzyklen diese Woche: 3
+━━━━━━━━━━━━━━━━━━━━━━
+☀️ Produktion: 312.5 kWh
+🏠 Eigenverbrauch: 224.8 kWh (72%)
+🔌 Einspeisung: 87.7 kWh
+⚡ Netzbezug: 45.3 kWh
+━━━━━━━━━━━━━━━━━━━━━━
+💡 Ein gesunder Zyklus pro Tag ist normal.
+🔋 Bei vielen Zyklen: Batterie-Settings prüfen.
+```
 
 ## Nachtmodus
 
