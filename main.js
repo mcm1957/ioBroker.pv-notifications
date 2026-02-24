@@ -931,15 +931,21 @@ class PvNotifications extends utils.Adapter {
     }
 
     /**
-     * Tägliche Statistik zurücksetzen (nur um 22:00)
+     * Tägliche Statistik zurücksetzen (zur konfigurierten Zeit)
      */
     resetDailyStats() {
         const today = new Date().getDate();
         const now = new Date();
         const hours = now.getHours();
-
-        // Reset nur zwischen 22:00 und 23:59
-        if (today !== this.stats.lastStatsReset && hours >= 22) {
+        const minutes = now.getMinutes();
+        
+        // Konfigurierte Zeit parsen
+        const [resetHours, resetMinutes] = this.config.statsDayTime.split(':').map(Number);
+        
+        // Reset zur konfigurierten Zeit
+        if (today !== this.stats.lastStatsReset && 
+            hours === resetHours && 
+            minutes === resetMinutes) {
             this.log.info('Setze tägliche Statistik zurück');
             this.stats.fullCycles = 0;
             this.stats.emptyCycles = 0;
