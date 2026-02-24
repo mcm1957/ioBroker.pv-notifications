@@ -215,9 +215,12 @@ class PvNotifications extends utils.Adapter {
      * Is called if a subscribed state changes
      */
     async onStateChange(id, state) {
+        this.log.debug(`State geändert: ${id} = ${JSON.stringify(state)}`);
+        
         if (state) {
             // Test-Button verarbeiten
             if (id === `${this.namespace}.testButton`) {
+                this.log.info(`Test-Button State empfangen: ${id}, val=${state.val}`);
                 if (state.val === true) {
                     this.log.info('Test-Button wurde gedrückt');
                     this.sendTestMessage();
