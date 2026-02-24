@@ -995,6 +995,8 @@ class PvNotifications extends utils.Adapter {
      * @param {any} obj
      */
     async onMessage(obj) {
+        this.log.debug(`onMessage erhalten: ${JSON.stringify(obj)}`);
+        
         if (obj) {
             switch (obj.command) {
                 case 'sendTestMessage':
