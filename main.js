@@ -5,10 +5,9 @@
  * Send Telegram notifications for PV battery status
  */
 
-// Adapter ohne @iobroker/adapter-core verwenden
-const Adapter = require('iobroker').Adapter;
+const utils = require('@iobroker/adapter-core');
 
-class PvNotifications extends Adapter {
+class PvNotifications extends utils.Adapter {
     /**
      * @param {Partial<utils.AdapterOptions>} [options={}]
      */
