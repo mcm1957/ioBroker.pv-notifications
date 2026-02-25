@@ -269,35 +269,35 @@
     "intermediateSteps": {
       "type": "text",
       "label": "label_intermediateSteps",
-      "sm": 6,
-      "md": 6,
-      "lg": 6,
+      "sm": 4,
+      "md": 4,
+      "lg": 4,
       "tooltip": "tooltip_intermediateSteps"
     },
     "minIntervalFull": {
       "type": "number",
       "label": "label_minIntervalFull",
-      "sm": 3,
-      "md": 3,
-      "lg": 3,
+      "sm": 4,
+      "md": 4,
+      "lg": 4,
       "min": 1,
       "max": 120
     },
     "minIntervalEmpty": {
       "type": "number",
       "label": "label_minIntervalEmpty",
-      "sm": 3,
-      "md": 3,
-      "lg": 3,
+      "sm": 4,
+      "md": 4,
+      "lg": 4,
       "min": 1,
       "max": 120
     },
     "minIntervalIntermediate": {
       "type": "number",
       "label": "label_minIntervalIntermediate",
-      "sm": 6,
-      "md": 6,
-      "lg": 6,
+      "sm": 4,
+      "md": 4,
+      "lg": 4,
       "min": 1,
       "max": 120,
       "default": 30
