@@ -411,14 +411,21 @@ class PvNotifications extends utils.Adapter {
         // Vorherigen SOC für nächste Aktualisierung speichern
         this.status.previousSOC = soc;
 
-        // === NACHT-ZEIT (00:00-08:00) - Nur 0% Benachrichtigung erlauben ===
+        // === NACHT-ZEIT - Prüfen mit konfigurierbarer Zeit ===
         const nightTime = this.isNightTime();
         const nightModeActive = this.config.nightModeEnabled !== false;
         const ignoreEmptyAtNight = this.config.nightModeIgnoreEmpty !== false;
 
-        // === Batterie VOLL (100%) - Nicht nachts (wenn Nachtmodus aktiv) ===
+        // === RUHE-ZEIT - Neue Logik für Ruhemodus ===
+        const quietTime = this.isQuietTime();
+        const quietModeActive = this.config.quietModeEnabled !== false;
+
+        // === Batterie VOLL (100%) - Nicht nachts (wenn Nachtmodus aktiv) und nicht in Ruhezeit ===
         if (soc === this.config.thresholdFull) {
-            if ((!nightTime || !nightModeActive) && !this.status.full && this.canNotify('full')) {
+            // Prüfen ob Benachrichtigung erlaubt ist (nicht in Nachtzeit oder Ruhezeit)
+            const allowNotification = (!nightTime || !nightModeActive) && (!quietTime || !quietModeActive);
+            
+            if (allowNotification && !this.status.full && this.canNotify('full')) {
                 const message = this.buildFullMessage(soc);
                 this.sendTelegram(message, 'high');
                 this.status.full = true;
@@ -429,8 +436,13 @@ class PvNotifications extends utils.Adapter {
                 this.log.info('Batterie voll - Telegram gesendet');
             } else if (this.status.full && !this.canNotify('full')) {
                 this.log.debug('Batterie voll, aber Intervall noch nicht abgelaufen');
-            } else if (nightTime && nightModeActive) {
-                this.log.debug('Batterie voll, aber Nachtzeit (00:00-08:00) - keine Benachrichtigung');
+            } else if (!allowNotification) {
+                if (nightTime && nightModeActive) {
+                    this.log.debug('Batterie voll, aber Nachtzeit - keine Benachrichtigung');
+                }
+                if (quietTime && quietModeActive) {
+                    this.log.debug('Batterie voll, aber Ruhezeit - keine Benachrichtigung');
+                }
             }
         }
 
@@ -438,8 +450,11 @@ class PvNotifications extends utils.Adapter {
         if (soc === this.config.thresholdEmpty) {
             if (!this.status.empty && this.canNotify('empty')) {
                 // Bei 0% immer benachrichtigen wenn nightModeIgnoreEmpty aktiv ist
-                // Sonst nur wenn nicht Nachtzeit oder Nachtmodus deaktiviert
-                if (ignoreEmptyAtNight || !nightTime || !nightModeActive) {
+                // Aber trotzdem Ruhezeit beachten (außer nightModeIgnoreEmpty ist aktiv)
+                const allowEmptyNotification = ignoreEmptyAtNight || (!nightTime || !nightModeActive);
+                const blockedByQuietTime = quietTime && quietModeActive;
+                
+                if (allowEmptyNotification && !blockedByQuietTime) {
                     const message = this.buildEmptyMessage(soc);
                     this.sendTelegram(message, 'high');
                     this.status.empty = true;
@@ -448,6 +463,8 @@ class PvNotifications extends utils.Adapter {
                     this.stats.weekEmptyCycles++;
                     this.saveStatistics();
                     this.log.info('Batterie leer - Telegram gesendet');
+                } else if (blockedByQuietTime) {
+                    this.log.debug('Batterie leer, aber Ruhezeit aktiv');
                 } else if (nightTime && nightModeActive && !ignoreEmptyAtNight) {
                     this.log.debug('Batterie leer, aber Nachtmodus aktiv und 0% wird ignoriert');
                 }
@@ -456,12 +473,14 @@ class PvNotifications extends utils.Adapter {
             }
         }
 
-        // === Intermediate-Stufen (nur wenn nicht voll/leer und nicht nachts) ===
+        // === Intermediate-Stufen (nur wenn nicht voll/leer und nicht nachts und nicht in Ruhezeit) ===
         if (soc !== this.config.thresholdFull && soc !== this.config.thresholdEmpty) {
             const intermediateSteps = this.config.intermediateSteps.split(',').map(s => parseInt(s.trim()));
 
-            // Prüfe Intermediate-Stufen - nur außerhalb der Nachtzeit (wenn Nachtmodus aktiv)
-            if (!nightTime || !nightModeActive) {
+            // Prüfe Intermediate-Stufen - nur außerhalb der Nachtzeit und Ruhezeit
+            const allowIntermediate = (!nightTime || !nightModeActive) && (!quietTime || !quietModeActive);
+            
+            if (allowIntermediate) {
                 for (const step of intermediateSteps) {
                     if (soc === step && !this.status.intermediateNotified.includes(step)) {
                         if (this.canNotify('intermediate')) {
@@ -515,12 +534,53 @@ class PvNotifications extends utils.Adapter {
     }
 
     /**
-     * Prüfe ob aktuelle Zeit im Nacht-Fenster (00:00-08:00) ist
+     * Prüfe ob aktuelle Zeit im Nacht-Fenster ist (konfigurierbar)
      */
     isNightTime() {
+        if (!this.config.nightModeEnabled) {
+            return false;
+        }
+        
         const now = new Date();
-        const hours = now.getHours();
-        return hours >= 0 && hours < 8;
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        
+        const [startHour, startMin] = (this.config.nightModeStart || '00:00').split(':').map(Number);
+        const [endHour, endMin] = (this.config.nightModeEnd || '08:00').split(':').map(Number);
+        
+        const startTime = startHour * 60 + startMin;
+        const endTime = endHour * 60 + endMin;
+        
+        // Handle overnight periods (e.g., 22:00-06:00)
+        if (startTime > endTime) {
+            return currentTime >= startTime || currentTime < endTime;
+        }
+        
+        return currentTime >= startTime && currentTime < endTime;
+    }
+
+    /**
+     * Prüfe ob aktuelle Zeit im Ruhemodus-Fenster ist (konfigurierbar)
+     */
+    isQuietTime() {
+        if (!this.config.quietModeEnabled) {
+            return false;
+        }
+        
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        
+        const [startHour, startMin] = (this.config.quietModeStart || '22:00').split(':').map(Number);
+        const [endHour, endMin] = (this.config.quietModeEnd || '07:00').split(':').map(Number);
+        
+        const startTime = startHour * 60 + startMin;
+        const endTime = endHour * 60 + endMin;
+        
+        // Handle overnight periods (e.g., 22:00-07:00)
+        if (startTime > endTime) {
+            return currentTime >= startTime || currentTime < endTime;
+        }
+        
+        return currentTime >= startTime && currentTime < endTime;
     }
 
     /**

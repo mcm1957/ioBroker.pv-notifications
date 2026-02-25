@@ -206,20 +206,65 @@
     "nightModeEnabled": {
       "type": "checkbox",
       "label": "label_nightModeEnabled",
-      "sm": 12,
-      "md": 12,
-      "lg": 12,
+      "sm": 4,
+      "md": 4,
+      "lg": 4,
       "default": true,
       "tooltip": "tooltip_nightModeEnabled"
+    },
+    "nightModeStart": {
+      "type": "text",
+      "label": "label_nightModeStart",
+      "sm": 3,
+      "md": 3,
+      "lg": 3,
+      "default": "23:00",
+      "tooltip": "tooltip_nightModeStart"
+    },
+    "nightModeEnd": {
+      "type": "text",
+      "label": "label_nightModeEnd",
+      "sm": 3,
+      "md": 3,
+      "lg": 3,
+      "default": "06:00",
+      "tooltip": "tooltip_nightModeEnd"
     },
     "nightModeIgnoreEmpty": {
       "type": "checkbox",
       "label": "label_nightModeIgnoreEmpty",
-      "sm": 12,
-      "md": 12,
-      "lg": 12,
+      "sm": 6,
+      "md": 6,
+      "lg": 6,
       "default": true,
       "tooltip": "tooltip_nightModeIgnoreEmpty"
+    },
+    "quietModeEnabled": {
+      "type": "checkbox",
+      "label": "label_quietModeEnabled",
+      "sm": 6,
+      "md": 6,
+      "lg": 6,
+      "default": false,
+      "tooltip": "tooltip_quietModeEnabled"
+    },
+    "quietModeStart": {
+      "type": "text",
+      "label": "label_quietModeStart",
+      "sm": 3,
+      "md": 3,
+      "lg": 3,
+      "default": "12:00",
+      "tooltip": "tooltip_quietModeStart"
+    },
+    "quietModeEnd": {
+      "type": "text",
+      "label": "label_quietModeEnd",
+      "sm": 3,
+      "md": 3,
+      "lg": 3,
+      "default": "15:00",
+      "tooltip": "tooltip_quietModeEnd"
     },
     "intermediateSteps": {
       "type": "text",
