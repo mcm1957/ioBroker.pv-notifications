@@ -718,37 +718,22 @@ class PvNotifications extends utils.Adapter {
         // Leistung aus State lesen (aktualisiert in Echtzeit)
         const powerState = await this.getStateAsync('statistics.currentPower');
         const power = powerState && powerState.val !== null ? powerState.val : 0;
-        
+
         const trend = direction === 'up' ? '⬆️' : '⬇️';
         const currentKWh = this.round((soc / 100) * this.config.batteryCapacityWh / 1000, 1);
 
-        // Nachrichtentext basierend auf SOC und Richtung
-        let infoText = '';
-        if (soc === 80) {
-            infoText = this.systemLang === 'ru' ? '💡 Скоро полон!' : '💡 Bald voll!';
-        } else if (soc === 60) {
-            infoText = '';
-        } else if (soc === 40) {
-            infoText = this.systemLang === 'ru' ? '💡 Еще достаточно резерва' : '💡 Noch ausreichend Reserve';
-        } else if (soc === 20) {
-            if (direction === 'down') {
-                infoText = this.systemLang === 'ru' ? '⚠️ Скоро нужен резерв' : '⚠️ Bald Reserve nötig';
-            } else {
-                infoText = this.systemLang === 'ru' ? '✅ Батарея заряжается' : '✅ Batterie wird geladen';
-            }
-        }
+        // Einheitlicher Status-Text für alle Intermediate-Stufen
+        const statusText = direction === 'up' 
+            ? (this.systemLang === 'ru' ? '✅ Батарея заряжается' : '✅ Batterie wird geladen')
+            : (this.systemLang === 'ru' ? '⚠️ Батарея разряжается' : '⚠️ Batterie wird entladen');
 
+        // Einheitliche Nachricht für alle Stufen (20, 40, 60, 80)
         const batteryAt = this.translate('Battery at');
         const production = this.translate('Production');
 
-        const messages = {
-            80: `🔋 ${batteryAt} ${soc}% (${currentKWh} kWh) ${trend}\n⚡ ${production}: ${this.round(power)} W\n${infoText}`,
-            60: `🔋 ${batteryAt} ${soc}% (${currentKWh} kWh) ${trend}\n⚡ ${production}: ${this.round(power)} W`,
-            40: `🔋 ${batteryAt} ${soc}% (${currentKWh} kWh) ${trend}\n⚡ ${production}: ${this.round(power)} W\n${infoText}`,
-            20: `🔋 ${batteryAt} ${soc}% (${currentKWh} kWh) ${trend}\n⚡ ${production}: ${this.round(power)} W\n${infoText}`
-        };
-
-        return messages[soc] || `🔋 ${batteryAt} ${soc}% (${currentKWh} kWh)`;
+        return `🔋 ${batteryAt} ${soc}% (${currentKWh} kWh) ${trend}
+⚡ ${production}: ${this.round(power)} W
+${statusText}`;
     }
 
     /**
