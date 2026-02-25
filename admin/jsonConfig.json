@@ -233,18 +233,18 @@
     "nightModeIgnoreEmpty": {
       "type": "checkbox",
       "label": "label_nightModeIgnoreEmpty",
-      "sm": 6,
-      "md": 6,
-      "lg": 6,
+      "sm": 12,
+      "md": 12,
+      "lg": 12,
       "default": true,
       "tooltip": "tooltip_nightModeIgnoreEmpty"
     },
     "quietModeEnabled": {
       "type": "checkbox",
       "label": "label_quietModeEnabled",
-      "sm": 6,
-      "md": 6,
-      "lg": 6,
+      "sm": 4,
+      "md": 4,
+      "lg": 4,
       "default": false,
       "tooltip": "tooltip_quietModeEnabled"
     },
