@@ -334,6 +334,9 @@ sadam6752@gmail.com
 
 ## Changelog
 
+### 1.0.85 (2026-02-26)
+* (FIX) Deprecated common.main removed from io-package.json (W1084)
+
 ### 1.0.84 (2026-02-26)
 * (FIX) Node.js version updated to >=18
 * (FIX) Dependencies updated (@iobroker/adapter-core to 3.2.3, @iobroker/testing to 5.2.2)
