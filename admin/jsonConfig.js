@@ -7,5 +7,5 @@ window.adapterSettings = {
     },
     onSave: function (callback) {
         save(callback);
-    }
+    },
 };

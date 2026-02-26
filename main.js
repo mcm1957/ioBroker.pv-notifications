@@ -9,7 +9,7 @@ const utils = require('@iobroker/adapter-core');
 
 class PvNotifications extends utils.Adapter {
     /**
-     * @param {Partial<utils.AdapterOptions>} [options={}]
+     * @param {Partial<utils.AdapterOptions>} [options]
      */
     constructor(options = {}) {
         super({
@@ -28,10 +28,10 @@ class PvNotifications extends utils.Adapter {
             lastNotification: {
                 full: 0,
                 empty: 0,
-                intermediate: 0
+                intermediate: 0,
             },
             previousSOC: null,
-            testMessageRunning: false  // Flag gegen doppelte Test-Nachrichten
+            testMessageRunning: false, // Flag gegen doppelte Test-Nachrichten
         };
 
         // Statistik
@@ -45,7 +45,7 @@ class PvNotifications extends utils.Adapter {
             lastStatsReset: new Date().getDate(),
             lastWeekReset: new Date().getDay(),
             lastMonthReset: 0,
-            
+
             // Letzte Monats-/Wochendaten
             lastMonthProduction: 0,
             lastMonthConsumption: 0,
@@ -58,16 +58,16 @@ class PvNotifications extends utils.Adapter {
             lastWeekFeedIn: 0,
             lastWeekGridPower: 0,
             lastWeekFullCycles: 0,
-            lastWeekEmptyCycles: 0
+            lastWeekEmptyCycles: 0,
         };
 
         this.onReady = this.onReady.bind(this);
         this.onStateChange = this.onStateChange.bind(this);
         this.onUnload = this.onUnload.bind(this);
-        
+
         // Ready-Handler registrieren (für js-controller 7+)
         this.on('ready', this.onReady);
-        
+
         // StateChange-Handler registrieren (für js-controller 7+)
         this.on('stateChange', this.onStateChange);
     }
@@ -88,7 +88,9 @@ class PvNotifications extends utils.Adapter {
         this.log.info('PV Notifications Adapter started');
 
         // Log configuration
-        this.log.info(`Configuration: Full=${this.config.thresholdFull}%, Empty=${this.config.thresholdEmpty}%, Intermediate=[${this.config.intermediateSteps}]`);
+        this.log.info(
+            `Configuration: Full=${this.config.thresholdFull}%, Empty=${this.config.thresholdEmpty}%, Intermediate=[${this.config.intermediateSteps}]`,
+        );
 
         // Create statistics states
         this.log.info('Creating statistics states...');
@@ -135,7 +137,7 @@ class PvNotifications extends utils.Adapter {
             this.subscribeForeignStates(this.config.batterySOC);
             this.log.info(`Subscription for ${this.config.batterySOC} created (foreign)`);
         }
-        
+
         // Create subscriptions for all data points
         const dataPoints = [
             this.config.powerProduction,
@@ -150,7 +152,7 @@ class PvNotifications extends utils.Adapter {
             this.config.monthlyProduction,
             this.config.monthlyConsumption,
             this.config.monthlyFeedIn,
-            this.config.monthlyGridPower
+            this.config.monthlyGridPower,
         ];
 
         for (const dp of dataPoints) {
@@ -193,7 +195,7 @@ class PvNotifications extends utils.Adapter {
             { name: 'Total Production', id: this.config.totalProduction },
             { name: 'Feed In', id: this.config.feedIn },
             { name: 'Consumption', id: this.config.consumption },
-            { name: 'Grid Power', id: this.config.gridPower }
+            { name: 'Grid Power', id: this.config.gridPower },
         ];
 
         for (const dp of dataPoints) {
@@ -202,7 +204,9 @@ class PvNotifications extends utils.Adapter {
                     const state = await this.getForeignStateAsync(dp.id);
                     if (state === null || state === undefined) {
                         this.log.warn(`No read access to "${dp.id}" (${dp.name}) - Please check permissions!`);
-                        this.log.warn(`Instructions: Objects → ${dp.id} → 🔑 Key → Enable Read/Receive for pv-notifications.0`);
+                        this.log.warn(
+                            `Instructions: Objects → ${dp.id} → 🔑 Key → Enable Read/Receive for pv-notifications.0`,
+                        );
                     }
                 } catch (e) {
                     this.log.warn(`Error accessing "${dp.id}" (${dp.name}): ${e.message}`);
@@ -213,6 +217,11 @@ class PvNotifications extends utils.Adapter {
 
     /**
      * State erstellen
+     *
+     * @param name
+     * @param def
+     * @param type
+     * @param desc
      */
     async createState(name, def, type, desc) {
         try {
@@ -224,8 +233,8 @@ class PvNotifications extends utils.Adapter {
                     role: 'value',
                     read: true,
                     write: true,
-                    def: def
-                }
+                    def: def,
+                },
             });
             this.log.debug(`State created: ${name}`);
         } catch (e) {
@@ -281,7 +290,7 @@ class PvNotifications extends utils.Adapter {
                 { config: this.config.totalProduction, state: 'statistics.currentTotalProduction' },
                 { config: this.config.feedIn, state: 'statistics.currentFeedIn' },
                 { config: this.config.consumption, state: 'statistics.currentConsumption' },
-                { config: this.config.gridPower, state: 'statistics.currentGridPower' }
+                { config: this.config.gridPower, state: 'statistics.currentGridPower' },
             ];
 
             for (const item of valueMap) {
@@ -337,20 +346,23 @@ class PvNotifications extends utils.Adapter {
 
     /**
      * Is called if a subscribed state changes
+     *
+     * @param id
+     * @param state
      */
     async onStateChange(id, state) {
         if (state) {
             // Process test button (all states in own namespace)
-            if (id.startsWith(this.namespace + '.testButton')) {
+            if (id.startsWith(`${this.namespace}.testButton`)) {
                 // Only when set to true and not already running
                 if (state.val === true && !this.status.testMessageRunning) {
-                    this.status.testMessageRunning = true;  // Set flag
+                    this.status.testMessageRunning = true; // Set flag
                     this.log.info(`Test button state received: ${id}, val=${state.val}`);
                     this.log.info('Test button was pressed');
                     await this.sendTestMessage();
                     // Reset state
                     await this.setStateAsync('testButton', false, true);
-                    this.status.testMessageRunning = false;  // Reset flag
+                    this.status.testMessageRunning = false; // Reset flag
                 }
                 return;
             }
@@ -384,29 +396,38 @@ class PvNotifications extends utils.Adapter {
 
     /**
      * Main function - called on SOC change
+     *
+     * @param soc
      */
     async onBatterySOCChange(soc) {
         // Check for undefined/null values
         if (soc === null || soc === undefined || isNaN(soc)) {
-            this.log.warn('Invalid SOC value received: ' + soc);
+            this.log.warn(`Invalid SOC value received: ${soc}`);
             return;
         }
 
         // Update current states
         await this.setStateAsync('statistics.currentSOC', soc, true);
-        const currentKWh = this.round((soc / 100) * this.config.batteryCapacityWh / 1000, 1);
+        const currentKWh = this.round(((soc / 100) * this.config.batteryCapacityWh) / 1000, 1);
         await this.setStateAsync('statistics.currentEnergyKWh', currentKWh, true);
 
         // Update statistics
-        if (soc > this.stats.maxSOC) this.stats.maxSOC = soc;
-        if (soc < this.stats.minSOC) this.stats.minSOC = soc;
+        if (soc > this.stats.maxSOC) {
+            this.stats.maxSOC = soc;
+        }
+        if (soc < this.stats.minSOC) {
+            this.stats.minSOC = soc;
+        }
 
         this.log.debug(`Battery SOC: ${soc}% | Status: full=${this.status.full}, empty=${this.status.empty}`);
 
         // Determine direction (rising/falling) for intermediate
-        const direction = (this.status.previousSOC !== null && soc > this.status.previousSOC)
-            ? 'up'
-            : (this.status.previousSOC !== null && soc < this.status.previousSOC) ? 'down' : 'up';
+        const direction =
+            this.status.previousSOC !== null && soc > this.status.previousSOC
+                ? 'up'
+                : this.status.previousSOC !== null && soc < this.status.previousSOC
+                  ? 'down'
+                  : 'up';
 
         // Store previous SOC for next update
         this.status.previousSOC = soc;
@@ -451,7 +472,7 @@ class PvNotifications extends utils.Adapter {
             if (!this.status.empty && this.canNotify('empty')) {
                 // Always notify at 0% if nightModeIgnoreEmpty is active
                 // But still respect quiet time (unless nightModeIgnoreEmpty is active)
-                const allowEmptyNotification = ignoreEmptyAtNight || (!nightTime || !nightModeActive);
+                const allowEmptyNotification = ignoreEmptyAtNight || !nightTime || !nightModeActive;
                 const blockedByQuietTime = quietTime && quietModeActive;
 
                 if (allowEmptyNotification && !blockedByQuietTime) {
@@ -478,7 +499,7 @@ class PvNotifications extends utils.Adapter {
 
             // Prüfe Intermediate-Stufen - nur außerhalb der Nachtzeit und Ruhezeit
             const allowIntermediate = (!nightTime || !nightModeActive) && (!quietTime || !quietModeActive);
-            
+
             if (allowIntermediate) {
                 for (const step of intermediateSteps) {
                     if (soc === step && !this.status.intermediateNotified.includes(step)) {
@@ -523,13 +544,15 @@ class PvNotifications extends utils.Adapter {
 
     /**
      * Prüfe ob Mindestintervall eingehalten
+     *
+     * @param type
      */
     canNotify(type) {
         const now = Date.now();
         const lastTime = this.status.lastNotification[type] || 0;
         const minIntervalMinutes = this.config[`minInterval${type.charAt(0).toUpperCase() + type.slice(1)}`] || 10;
         const minInterval = minIntervalMinutes * 60 * 1000;
-        return (now - lastTime) >= minInterval;
+        return now - lastTime >= minInterval;
     }
 
     /**
@@ -539,21 +562,21 @@ class PvNotifications extends utils.Adapter {
         if (!this.config.nightModeEnabled) {
             return false;
         }
-        
+
         const now = new Date();
         const currentTime = now.getHours() * 60 + now.getMinutes();
-        
+
         const [startHour, startMin] = (this.config.nightModeStart || '00:00').split(':').map(Number);
         const [endHour, endMin] = (this.config.nightModeEnd || '08:00').split(':').map(Number);
-        
+
         const startTime = startHour * 60 + startMin;
         const endTime = endHour * 60 + endMin;
-        
+
         // Handle overnight periods (e.g., 22:00-06:00)
         if (startTime > endTime) {
             return currentTime >= startTime || currentTime < endTime;
         }
-        
+
         return currentTime >= startTime && currentTime < endTime;
     }
 
@@ -564,26 +587,28 @@ class PvNotifications extends utils.Adapter {
         if (!this.config.quietModeEnabled) {
             return false;
         }
-        
+
         const now = new Date();
         const currentTime = now.getHours() * 60 + now.getMinutes();
-        
+
         const [startHour, startMin] = (this.config.quietModeStart || '22:00').split(':').map(Number);
         const [endHour, endMin] = (this.config.quietModeEnd || '07:00').split(':').map(Number);
-        
+
         const startTime = startHour * 60 + startMin;
         const endTime = endHour * 60 + endMin;
-        
+
         // Handle overnight periods (e.g., 22:00-07:00)
         if (startTime > endTime) {
             return currentTime >= startTime || currentTime < endTime;
         }
-        
+
         return currentTime >= startTime && currentTime < endTime;
     }
 
     /**
      * Sende Telegram-Nachricht mit Zeitstempel
+     *
+     * @param message
      */
     sendTelegram(message) {
         const timestamp = this.getTimeString();
@@ -592,25 +617,33 @@ class PvNotifications extends utils.Adapter {
         if (this.config.telegramInstance) {
             // Benutzer aus kommagetrennter Liste
             const users = this.config.telegramUsers || '';
-            const usersList = users.split(',').map(u => u.trim()).filter(u => u.length > 0);
+            const usersList = users
+                .split(',')
+                .map(u => u.trim())
+                .filter(u => u.length > 0);
 
             if (usersList.length > 0) {
-                this.sendTo(this.config.telegramInstance, 'send', {
-                    text: fullMessage,
-                    users: usersList.join(', ')
-                }, (result) => {
-                    if (result && result.error) {
-                        this.log.error(`Telegram error: ${result.error}`);
-                    } else {
-                        this.log.info(fullMessage);
-                        this.log.info(`Telegram sent successfully to: ${usersList.join(', ')}`);
-                    }
-                });
+                this.sendTo(
+                    this.config.telegramInstance,
+                    'send',
+                    {
+                        text: fullMessage,
+                        users: usersList.join(', '),
+                    },
+                    result => {
+                        if (result && result.error) {
+                            this.log.error(`Telegram error: ${result.error}`);
+                        } else {
+                            this.log.info(fullMessage);
+                            this.log.info(`Telegram sent successfully to: ${usersList.join(', ')}`);
+                        }
+                    },
+                );
             } else {
-                this.log.warn('No Telegram users configured: ' + fullMessage);
+                this.log.warn(`No Telegram users configured: ${fullMessage}`);
             }
         } else {
-            this.log.warn('Telegram instance not configured: ' + fullMessage);
+            this.log.warn(`Telegram instance not configured: ${fullMessage}`);
         }
     }
 
@@ -624,6 +657,8 @@ class PvNotifications extends utils.Adapter {
 
     /**
      * Baue detaillierte Status-Nachricht bei vollem Akku
+     *
+     * @param soc
      */
     buildFullMessage(soc) {
         const power = this.getStateValue(this.config.powerProduction);
@@ -645,7 +680,7 @@ class PvNotifications extends utils.Adapter {
                 const weatherTomorrow = this.getStateValue(this.config.weatherTomorrow);
                 const tempTomorrow = this.getStateValue(this.config.weatherTomorrowTemp);
                 const tempText = tempTomorrow ? ` ${this.round(tempTomorrow, 1)}°C` : '';
-                
+
                 const weatherText = weatherTomorrowText || weatherTomorrow;
                 if (weatherText) {
                     const weatherDesc = this.getWeatherDescription(weatherText);
@@ -656,7 +691,7 @@ class PvNotifications extends utils.Adapter {
                     }
                 }
             } catch (e) {
-                this.log.debug('Weather data not available: ' + e.message);
+                this.log.debug(`Weather data not available: ${e.message}`);
             }
         }
 
@@ -670,6 +705,8 @@ class PvNotifications extends utils.Adapter {
 
     /**
      * Baue Nachricht bei leerem Akku
+     *
+     * @param soc
      */
     buildEmptyMessage(soc) {
         const gridPower = this.getStateValue(this.config.gridPower);
@@ -687,7 +724,7 @@ class PvNotifications extends utils.Adapter {
                 const weatherTomorrow = this.getStateValue(this.config.weatherTomorrow);
                 const tempTomorrow = this.getStateValue(this.config.weatherTomorrowTemp);
                 const tempText = tempTomorrow ? ` ${this.round(tempTomorrow, 1)}°C` : '';
-                
+
                 const weatherText = weatherTomorrowText || weatherTomorrow;
                 if (weatherText) {
                     const weatherDesc = this.getWeatherDescription(weatherText);
@@ -698,7 +735,7 @@ class PvNotifications extends utils.Adapter {
                     }
                 }
             } catch (e) {
-                this.log.debug('Weather data not available: ' + e.message);
+                this.log.debug(`Weather data not available: ${e.message}`);
             }
         }
 
@@ -712,6 +749,9 @@ class PvNotifications extends utils.Adapter {
 
     /**
      * Baue Intermediate-Nachricht (20%, 40%, 60%, 80%)
+     *
+     * @param soc
+     * @param direction
      */
     async buildIntermediateMessage(soc, direction) {
         // Leistung aus State lesen (aktualisiert in Echtzeit)
@@ -719,12 +759,17 @@ class PvNotifications extends utils.Adapter {
         const power = powerState && powerState.val !== null ? powerState.val : 0;
 
         const trend = direction === 'up' ? '⬆️' : '⬇️';
-        const currentKWh = this.round((soc / 100) * this.config.batteryCapacityWh / 1000, 1);
+        const currentKWh = this.round(((soc / 100) * this.config.batteryCapacityWh) / 1000, 1);
 
         // Einheitlicher Status-Text für alle Intermediate-Stufen
-        const statusText = direction === 'up' 
-            ? (this.systemLang === 'ru' ? '✅ Батарея заряжается' : '✅ Batterie wird geladen')
-            : (this.systemLang === 'ru' ? '⚠️ Батарея разряжается' : '⚠️ Batterie wird entladen');
+        const statusText =
+            direction === 'up'
+                ? this.systemLang === 'ru'
+                    ? '✅ Батарея заряжается'
+                    : '✅ Batterie wird geladen'
+                : this.systemLang === 'ru'
+                  ? '⚠️ Батарея разряжается'
+                  : '⚠️ Batterie wird entladen';
 
         // Einheitliche Nachricht für alle Stufen (20, 40, 60, 80)
         const batteryAt = this.translate('Battery at');
@@ -742,20 +787,20 @@ ${statusText}`;
         // Werte aus States lesen
         const socState = await this.getStateAsync('statistics.currentSOC');
         const soc = socState && socState.val !== null ? socState.val : 0;
-        
+
         const batteryCapacityKWh = this.round(this.config.batteryCapacityWh / 1000, 1);
-        const currentKWh = this.round((soc / 100) * this.config.batteryCapacityWh / 1000, 1);
-        
+        const currentKWh = this.round(((soc / 100) * this.config.batteryCapacityWh) / 1000, 1);
+
         // Weitere Werte aus States lesen
         const totalProdState = await this.getStateAsync('statistics.currentTotalProduction');
         const totalProd = totalProdState && totalProdState.val !== null ? this.round(totalProdState.val, 1) : 0;
-        
+
         const feedInState = await this.getStateAsync('statistics.currentFeedIn');
         const feedIn = feedInState && feedInState.val !== null ? this.round(Math.abs(feedInState.val), 0) : 0;
-        
+
         const gridPowerState = await this.getStateAsync('statistics.currentGridPower');
         const gridPower = gridPowerState && gridPowerState.val !== null ? this.round(gridPowerState.val, 0) : 0;
-        
+
         // Eigenverbrauch berechnen
         const selfConsumption = this.round(totalProd - feedIn, 1);
         const selfConsumptionRate = totalProd > 0 ? this.round((selfConsumption / totalProd) * 100, 1) : 0;
@@ -791,7 +836,7 @@ ${statusText}`;
                     }
                 }
             } catch (e) {
-                this.log.debug('Weather data for tomorrow not available: ' + e.message);
+                this.log.debug(`Weather data for tomorrow not available: ${e.message}`);
             }
         }
 
@@ -848,66 +893,112 @@ ${statusText}`;
 
     /**
      * Hole Wetter-Description aus Text
+     *
+     * @param weatherText
      */
     getWeatherDescription(weatherText) {
-        if (!weatherText) return '🌡️ unbekannt';
+        if (!weatherText) {
+            return '🌡️ unbekannt';
+        }
 
         const text = weatherText.toLowerCase();
 
-        if (text.includes('sonnig') || text.includes('klar')) return '☀️ sonnig';
-        if (text.includes('wolkig') || text.includes('bewölkt')) return '⛅ bewölkt';
-        if (text.includes('bedeckt')) return '☁️ bedeckt';
-        if (text.includes('regen') || text.includes('rain')) return '🌧️ Regen';
-        if (text.includes('schnee') || text.includes('snow')) return '❄️ Schnee';
-        if (text.includes('gewitter') || text.includes('thunder')) return '⛈️ Gewitter';
-        if (text.includes('nebel') || text.includes('fog')) return '🌫️ Nebel';
+        if (text.includes('sonnig') || text.includes('klar')) {
+            return '☀️ sonnig';
+        }
+        if (text.includes('wolkig') || text.includes('bewölkt')) {
+            return '⛅ bewölkt';
+        }
+        if (text.includes('bedeckt')) {
+            return '☁️ bedeckt';
+        }
+        if (text.includes('regen') || text.includes('rain')) {
+            return '🌧️ Regen';
+        }
+        if (text.includes('schnee') || text.includes('snow')) {
+            return '❄️ Schnee';
+        }
+        if (text.includes('gewitter') || text.includes('thunder')) {
+            return '⛈️ Gewitter';
+        }
+        if (text.includes('nebel') || text.includes('fog')) {
+            return '🌫️ Nebel';
+        }
 
-        if (text.includes('clear')) return '☀️ sonnig';
-        if (text.includes('cloud')) return '⛅ bewölkt';
+        if (text.includes('clear')) {
+            return '☀️ sonnig';
+        }
+        if (text.includes('cloud')) {
+            return '⛅ bewölkt';
+        }
 
-        return '🌡️ ' + weatherText;
+        return `🌡️ ${weatherText}`;
     }
 
     /**
      * Prüfe ob Wetter gut ist
+     *
+     * @param weatherText
      */
     isWeatherGood(weatherText) {
-        if (!weatherText) return false;
+        if (!weatherText) {
+            return false;
+        }
         const text = weatherText.toLowerCase();
-        return text.includes('sonnig') || text.includes('klar') ||
-               text.includes('clear') || text.includes('few clouds');
+        return (
+            text.includes('sonnig') || text.includes('klar') || text.includes('clear') || text.includes('few clouds')
+        );
     }
 
     /**
      * Prüfe ob Wetter schlecht ist
+     *
+     * @param weatherText
      */
     isWeatherBad(weatherText) {
-        if (!weatherText) return false;
+        if (!weatherText) {
+            return false;
+        }
         const text = weatherText.toLowerCase();
-        return text.includes('regen') || text.includes('rain') ||
-               text.includes('schnee') || text.includes('snow') ||
-               text.includes('gewitter') || text.includes('thunder') ||
-               text.includes('bedeckt') || text.includes('overcast');
+        return (
+            text.includes('regen') ||
+            text.includes('rain') ||
+            text.includes('schnee') ||
+            text.includes('snow') ||
+            text.includes('gewitter') ||
+            text.includes('thunder') ||
+            text.includes('bedeckt') ||
+            text.includes('overcast')
+        );
     }
 
     /**
      * State-Wert holen
+     *
+     * @param id
      */
     getStateValue(id) {
-        if (!id) return 0;
+        if (!id) {
+            return 0;
+        }
         try {
             const state = this.getState(id);
             return state && state.val !== null && state.val !== undefined ? state.val : 0;
-        } catch (e) {
+        } catch {
             return 0;
         }
     }
 
     /**
      * Runde Zahl auf Dezimalstellen
+     *
+     * @param value
+     * @param decimals
      */
     round(value, decimals = 2) {
-        if (value === null || value === undefined || isNaN(value)) return 0;
+        if (value === null || value === undefined || isNaN(value)) {
+            return 0;
+        }
         return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
     }
 
@@ -922,14 +1013,14 @@ ${statusText}`;
             const minutes = now.getMinutes();
             const day = now.getDay(); // 0=So, 1=Mo, ..., 6=Sa
             const date = now.getDate();
-            
+
             // Alle 5 Minuten: Statistik prüfen (um :00, :05, :10, ...)
             if (minutes % 5 === 0) {
                 this.resetDailyStats();
                 this.resetWeeklyStats();
                 this.resetMonthlyStats();
             }
-            
+
             // Tägliche Statistik zur konfigurierten Zeit
             const [dayHours, dayMinutes] = this.config.statsDayTime.split(':').map(Number);
             if (hours === dayHours && minutes === dayMinutes) {
@@ -951,7 +1042,9 @@ ${statusText}`;
             }
         }, 60000); // Jede Minute ausführen
 
-        this.log.info(`Zeitgesteuerte Aufgaben gestartet (Täglich: ${this.config.statsDayTime}, Wöchentlich: Tag ${this.config.statsWeekDay} um ${this.config.statsWeekTime})`);
+        this.log.info(
+            `Zeitgesteuerte Aufgaben gestartet (Täglich: ${this.config.statsDayTime}, Wöchentlich: Tag ${this.config.statsWeekDay} um ${this.config.statsWeekTime})`,
+        );
     }
 
     /**
@@ -962,14 +1055,12 @@ ${statusText}`;
         const now = new Date();
         const hours = now.getHours();
         const minutes = now.getMinutes();
-        
+
         // Konfigurierte Zeit parsen
         const [resetHours, resetMinutes] = this.config.statsDayTime.split(':').map(Number);
-        
+
         // Reset zur konfigurierten Zeit
-        if (today !== this.stats.lastStatsReset &&
-            hours === resetHours &&
-            minutes === resetMinutes) {
+        if (today !== this.stats.lastStatsReset && hours === resetHours && minutes === resetMinutes) {
             this.log.info('Resetting daily statistics');
             this.stats.fullCycles = 0;
             this.stats.emptyCycles = 0;
@@ -987,7 +1078,7 @@ ${statusText}`;
         const today = new Date().getDay();
         if (today === this.config.statsWeekDay && today !== this.stats.lastWeekReset) {
             this.log.info('Resetting weekly statistics');
-            
+
             // Aktuelle Daten als "letzte Woche" speichern
             this.stats.lastWeekProduction = this.getStateValue(this.config.weeklyProduction);
             this.stats.lastWeekConsumption = this.getStateValue(this.config.weeklyConsumption);
@@ -995,12 +1086,12 @@ ${statusText}`;
             this.stats.lastWeekGridPower = this.getStateValue(this.config.weeklyGridPower);
             this.stats.lastWeekFullCycles = this.stats.weekFullCycles;
             this.stats.lastWeekEmptyCycles = this.stats.weekEmptyCycles;
-            
+
             // Wöchentliche Statistik zurücksetzen
             this.stats.weekFullCycles = 0;
             this.stats.weekEmptyCycles = 0;
             this.stats.lastWeekReset = today;
-            
+
             this.saveStatistics();
             this.sendTelegram(this.buildWeeklyStatsMessage());
         }
@@ -1010,7 +1101,9 @@ ${statusText}`;
      * Monatsstatistik zurücksetzen
      */
     resetMonthlyStats() {
-        if (!this.config.monthlyStatsEnabled) return;
+        if (!this.config.monthlyStatsEnabled) {
+            return;
+        }
 
         const today = new Date().getDate();
         const now = new Date();
@@ -1019,11 +1112,9 @@ ${statusText}`;
         // const [statMinutes] = ...  // ESLint: unused
 
         // Daten am konfigurierten Tag nach der Sendezeit speichern
-        if (today === this.config.monthlyStatsDay &&
-            this.stats.lastMonthReset !== today &&
-            hours >= statHours) {
+        if (today === this.config.monthlyStatsDay && this.stats.lastMonthReset !== today && hours >= statHours) {
             this.log.info('Resetting monthly statistics');
-            
+
             // Aktuelle Daten als "letzter Monat" speichern
             this.stats.lastMonthProduction = this.getStateValue(this.config.monthlyProduction);
             this.stats.lastMonthConsumption = this.getStateValue(this.config.monthlyConsumption);
@@ -1031,7 +1122,7 @@ ${statusText}`;
             this.stats.lastMonthGridPower = this.getStateValue(this.config.monthlyGridPower);
             this.stats.lastMonthFullCycles = this.stats.fullCycles;
             this.stats.lastMonthEmptyCycles = this.stats.emptyCycles;
-            
+
             this.stats.lastMonthReset = today;
             this.saveStatistics();
         }
@@ -1054,175 +1145,177 @@ ${statusText}`;
 
     /**
      * Text übersetzen
+     *
+     * @param key
      */
     translate(key) {
         const translations = {
             'Battery full': {
-                'de': 'Batterie VOLL',
-                'en': 'Battery FULL',
-                'ru': 'БАТАРЕЯ ПОЛНА'
+                de: 'Batterie VOLL',
+                en: 'Battery FULL',
+                ru: 'БАТАРЕЯ ПОЛНА',
             },
             'Battery empty': {
-                'de': 'Batterie LEER',
-                'en': 'Battery EMPTY',
-                'ru': 'БАТАРЕЯ ПУСТА'
+                de: 'Batterie LEER',
+                en: 'Battery EMPTY',
+                ru: 'БАТАРЕЯ ПУСТА',
             },
             'Battery at': {
-                'de': 'Batterie bei',
-                'en': 'Battery at',
-                'ru': 'Батарея'
+                de: 'Batterie bei',
+                en: 'Battery at',
+                ru: 'Батарея',
             },
             'Daily statistics PV system': {
-                'de': 'Tagesstatistik PV-Anlage',
-                'en': 'Daily Statistics PV System',
-                'ru': 'Дневная статистика PV системы'
+                de: 'Tagesstatistik PV-Anlage',
+                en: 'Daily Statistics PV System',
+                ru: 'Дневная статистика PV системы',
             },
             'Weekly statistics PV system': {
-                'de': 'Wochenstatistik PV-Anlage',
-                'en': 'Weekly Statistics PV System',
-                'ru': 'Недельная статистика PV системы'
+                de: 'Wochenstatistik PV-Anlage',
+                en: 'Weekly Statistics PV System',
+                ru: 'Недельная статистика PV системы',
             },
             'Monthly statistics PV system': {
-                'de': 'Monatsstatistik PV-Anlage',
-                'en': 'Monthly Statistics PV System',
-                'ru': 'Месячная статистика PV системы'
+                de: 'Monatsstatistik PV-Anlage',
+                en: 'Monthly Statistics PV System',
+                ru: 'Месячная статистика PV системы',
             },
             'Current charge level': {
-                'de': 'Aktueller Ladestand',
-                'en': 'Current charge level',
-                'ru': 'Текущий уровень заряда'
+                de: 'Aktueller Ladestand',
+                en: 'Current charge level',
+                ru: 'Текущий уровень заряда',
             },
             'Current energy': {
-                'de': 'Aktuelle Energie',
-                'en': 'Current energy',
-                'ru': 'Текущая энергия'
+                de: 'Aktuelle Energie',
+                en: 'Current energy',
+                ru: 'Текущая энергия',
             },
             'Total capacity': {
-                'de': 'Gesamt',
-                'en': 'Total capacity',
-                'ru': 'Общая емкость'
+                de: 'Gesamt',
+                en: 'Total capacity',
+                ru: 'Общая емкость',
             },
-            'Production': {
-                'de': 'Produktion',
-                'en': 'Production',
-                'ru': 'Производство'
+            Production: {
+                de: 'Produktion',
+                en: 'Production',
+                ru: 'Производство',
             },
             'Own consumption': {
-                'de': 'Eigenverbrauch',
-                'en': 'Own consumption',
-                'ru': 'Собственное потребление'
+                de: 'Eigenverbrauch',
+                en: 'Own consumption',
+                ru: 'Собственное потребление',
             },
             'Feed-in': {
-                'de': 'Einspeisung',
-                'en': 'Feed-in',
-                'ru': 'Подача в сеть'
+                de: 'Einspeisung',
+                en: 'Feed-in',
+                ru: 'Подача в сеть',
             },
             'Grid consumption': {
-                'de': 'Netzbezug',
-                'en': 'Grid consumption',
-                'ru': 'Потребление из сети'
+                de: 'Netzbezug',
+                en: 'Grid consumption',
+                ru: 'Потребление из сети',
             },
             'Full cycles last week': {
-                'de': 'Vollzyklen letzte Woche',
-                'en': 'Full cycles last week',
-                'ru': 'Полные циклы на прошлой неделе'
+                de: 'Vollzyklen letzte Woche',
+                en: 'Full cycles last week',
+                ru: 'Полные циклы на прошлой неделе',
             },
             'Empty cycles last week': {
-                'de': 'Leerzyklen letzte Woche',
-                'en': 'Empty cycles last week',
-                'ru': 'Пустые циклы на прошлой неделе'
+                de: 'Leerzyklen letzte Woche',
+                en: 'Empty cycles last week',
+                ru: 'Пустые циклы на прошлой неделе',
             },
             'Full cycles last month': {
-                'de': 'Vollzyklen letzter Monat',
-                'en': 'Full cycles last month',
-                'ru': 'Полные циклы в прошлом месяце'
+                de: 'Vollzyklen letzter Monat',
+                en: 'Full cycles last month',
+                ru: 'Полные циклы в прошлом месяце',
             },
             'Empty cycles last month': {
-                'de': 'Leerzyklen letzter Monat',
-                'en': 'Empty cycles last month',
-                'ru': 'Пустые циклы в прошлом месяце'
+                de: 'Leerzyklen letzter Monat',
+                en: 'Empty cycles last month',
+                ru: 'Пустые циклы в прошлом месяце',
             },
             'Weather tomorrow': {
-                'de': 'Wetter morgen',
-                'en': 'Weather tomorrow',
-                'ru': 'Погода завтра'
+                de: 'Wetter morgen',
+                en: 'Weather tomorrow',
+                ru: 'Погода завтра',
             },
             'Good PV production expected': {
-                'de': 'Gute PV-Produktion erwartet',
-                'en': 'Good PV production expected',
-                'ru': 'Ожидается хорошее производство PV'
+                de: 'Gute PV-Produktion erwartet',
+                en: 'Good PV production expected',
+                ru: 'Ожидается хорошее производство PV',
             },
             'Less PV production expected': {
-                'de': 'Weniger PV-Produktion erwartet',
-                'en': 'Less PV production expected',
-                'ru': 'Ожидается меньшее производство PV'
+                de: 'Weniger PV-Produktion erwartet',
+                en: 'Less PV production expected',
+                ru: 'Ожидается меньшее производство PV',
             },
             'Current production': {
-                'de': 'Aktuelle Produktion',
-                'en': 'Current production',
-                'ru': 'Текущее производство'
+                de: 'Aktuelle Produktion',
+                en: 'Current production',
+                ru: 'Текущее производство',
             },
             'Current consumption': {
-                'de': 'Aktueller Verbrauch',
-                'en': 'Current consumption',
-                'ru': 'Текущее потребление'
+                de: 'Aktueller Verbrauch',
+                en: 'Current consumption',
+                ru: 'Текущее потребление',
             },
             'Production today': {
-                'de': 'Produktion heute',
-                'en': 'Production today',
-                'ru': 'Производство сегодня'
+                de: 'Produktion heute',
+                en: 'Production today',
+                ru: 'Производство сегодня',
             },
             'Feed-in today': {
-                'de': 'Eingespeist heute',
-                'en': 'Feed-in today',
-                'ru': 'Подано в сеть сегодня'
+                de: 'Eingespeist heute',
+                en: 'Feed-in today',
+                ru: 'Подано в сеть сегодня',
             },
             'Grid consumption today': {
-                'de': 'Netzbezug heute',
-                'en': 'Grid consumption today',
-                'ru': 'Потребление из сети сегодня'
+                de: 'Netzbezug heute',
+                en: 'Grid consumption today',
+                ru: 'Потребление из сети сегодня',
             },
             'Consumption today': {
-                'de': 'Verbrauch heute',
-                'en': 'Consumption today',
-                'ru': 'Потребление сегодня'
+                de: 'Verbrauch heute',
+                en: 'Consumption today',
+                ru: 'Потребление сегодня',
             },
             'Tip tomorrow little sun use consumers today': {
-                'de': 'Tipp: Morgen wenig Sonne - heute Verbraucher nutzen',
-                'en': 'Tip: Little sun tomorrow - use consumers today',
-                'ru': 'Совет: Завтра мало солнца - используйте потребители сегодня'
+                de: 'Tipp: Morgen wenig Sonne - heute Verbraucher nutzen',
+                en: 'Tip: Little sun tomorrow - use consumers today',
+                ru: 'Совет: Завтра мало солнца - используйте потребители сегодня',
             },
             'Good news tomorrow more sun': {
-                'de': 'Gute Nachricht: Morgen wieder mehr Sonne',
-                'en': 'Good news: More sun tomorrow',
-                'ru': 'Хорошая новость: Завтра больше солнца'
+                de: 'Gute Nachricht: Morgen wieder mehr Sonne',
+                en: 'Good news: More sun tomorrow',
+                ru: 'Хорошая новость: Завтра больше солнца',
             },
             'Now ideal for electric car washing machine dishwasher': {
-                'de': 'Jetzt ideal für: Elektroauto, Waschmaschine, Spülmaschine',
-                'en': 'Now ideal for: Electric car, washing machine, dishwasher',
-                'ru': 'Сейчас идеально для: Электромобиль, стиральная машина, посудомоечная машина'
+                de: 'Jetzt ideal für: Elektroauto, Waschmaschine, Spülmaschine',
+                en: 'Now ideal for: Electric car, washing machine, dishwasher',
+                ru: 'Сейчас идеально для: Электромобиль, стиральная машина, посудомоечная машина',
             },
             'High consumption Turn off unnecessary devices': {
-                'de': 'Hoher Verbrauch! Nicht benötigte Geräte ausschalten',
-                'en': 'High consumption! Turn off unnecessary devices',
-                'ru': 'Высокое потребление! Выключите ненужные устройства'
+                de: 'Hoher Verbrauch! Nicht benötigte Geräte ausschalten',
+                en: 'High consumption! Turn off unnecessary devices',
+                ru: 'Высокое потребление! Выключите ненужные устройства',
             },
             'A healthy cycle per day is normal': {
-                'de': 'Ein gesunder Zyklus pro Tag ist normal',
-                'en': 'A healthy cycle per day is normal',
-                'ru': 'Один здоровый цикл в день - это нормально'
+                de: 'Ein gesunder Zyklus pro Tag ist normal',
+                en: 'A healthy cycle per day is normal',
+                ru: 'Один здоровый цикл в день - это нормально',
             },
             'If there are many cycles check battery settings': {
-                'de': 'Bei vielen Zyklen: Batterie-Settings prüfen',
-                'en': 'If there are many cycles, check battery settings',
-                'ru': 'При большом количестве циклов проверьте настройки батареи'
-            }
+                de: 'Bei vielen Zyklen: Batterie-Settings prüfen',
+                en: 'If there are many cycles, check battery settings',
+                ru: 'При большом количестве циклов проверьте настройки батареи',
+            },
         };
 
         if (translations[key] && translations[key][this.systemLang]) {
             return translations[key][this.systemLang];
         }
-        return translations[key] && translations[key]['de'] || key;
+        return (translations[key] && translations[key]['de']) || key;
     }
 
     /**
@@ -1232,10 +1325,10 @@ ${statusText}`;
         // Werte aus States lesen
         const socState = await this.getStateAsync('statistics.currentSOC');
         const soc = socState && socState.val !== null ? socState.val : 0;
-        
+
         const batteryCapacityKWh = this.round(this.config.batteryCapacityWh / 1000, 1);
-        const currentKWh = this.round((soc / 100) * this.config.batteryCapacityWh / 1000, 1);
-        
+        const currentKWh = this.round(((soc / 100) * this.config.batteryCapacityWh) / 1000, 1);
+
         // Weitere Werte aus States lesen
         const totalProdState = await this.getStateAsync('statistics.currentTotalProduction');
         const totalProd = totalProdState && totalProdState.val !== null ? this.round(totalProdState.val, 1) : 0;
@@ -1245,10 +1338,10 @@ ${statusText}`;
 
         const feedInState = await this.getStateAsync('statistics.currentFeedIn');
         const feedIn = feedInState && feedInState.val !== null ? this.round(Math.abs(feedInState.val), 0) : 0;
-        
+
         const gridPowerState = await this.getStateAsync('statistics.currentGridPower');
         const gridPower = gridPowerState && gridPowerState.val !== null ? this.round(gridPowerState.val, 0) : 0;
-        
+
         // Eigenverbrauch berechnen
         const selfConsumption = this.round(totalProd - feedIn, 1);
         const selfConsumptionRate = totalProd > 0 ? this.round((selfConsumption / totalProd) * 100, 1) : 0;
@@ -1316,6 +1409,7 @@ ${statusText}`;
 
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
+     *
      * @param {() => void} callback
      */
     async onUnload(callback) {
@@ -1326,19 +1420,18 @@ ${statusText}`;
             await this.saveStatistics();
             callback();
         } catch (e) {
-            this.log.error('Error while stopping: ' + e.message);
+            this.log.error(`Error while stopping: ${e.message}`);
             callback();
         }
     }
 }
 
-// @ts-ignore
 if (require.main !== module) {
     // Export the constructor in compact mode
     /**
      * @param {Partial<utils.AdapterOptions> | undefined} [options]
      */
-    module.exports = (options) => new PvNotifications(options);
+    module.exports = options => new PvNotifications(options);
 } else {
     // otherwise start the instance directly
     new PvNotifications();
