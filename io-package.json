@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "pv-notifications",
-    "version": "1.0.84",
+    "version": "1.0.85",
     "titleLang": {
       "en": "PV Notifications",
       "de": "PV-Benachrichtigungen",
@@ -19,7 +19,6 @@
       "type": "free"
     },
     "platform": "Javascript/Node.js",
-    "main": "main.js",
     "mode": "daemon",
     "type": "energy",
     "enabled": true,
@@ -45,6 +44,11 @@
       }
     ],
     "news": {
+      "1.0.85": {
+        "en": "Deprecated common.main removed from io-package.json",
+        "de": "Veraltetes common.main aus io-package.json entfernt",
+        "ru": "Удалено устаревшее common.main из io-package.json"
+      },
       "1.0.84": {
         "en": "Repository checker fixes: Node.js >=18, dependencies updated, io-package schema fixed, licenseInformation added",
         "de": "Repository-Checker-Fixes: Node.js >=18, Abhängigkeiten aktualisiert, io-package-Schema korrigiert, licenseInformation hinzugefügt",
