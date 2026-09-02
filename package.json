@@ -43,7 +43,7 @@
     "release": "release-script"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^3.2.3"
+    "@iobroker/adapter-core": "^3.4.3"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^5.2.1",
